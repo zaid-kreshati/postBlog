@@ -4,8 +4,8 @@
         <img id="coverImage" name="cover_image" src="{{ asset('storage/photos/' . $cover_image->URL) }}" alt="Profile photo"
             class="img-fluid img-thumbnail mt-4 mb-2" style="width: 100%; height: 250px; z-index: 1">
     @else
-        <img src="{{ asset('/PostBlug/default cover image.jpeg') }}" alt="Default cover image"
-            class="img-fluid img-thumbnail mt-4 mb-2" style="width: 100%; z-index: 1">
+        <img id="coverImage" src="{{ asset('/PostBlug/default cover image.jpeg') }}" alt="Default cover image"
+            class="img-fluid img-thumbnail mt-4 mb-2" style="width: 100%; height: 250px; z-index: 1">
     @endif
 
     <!-- Cover Image Form -->
@@ -39,8 +39,8 @@
                     alt="Profile photo" class="img-fluid img-thumbnail mt-4 mb-2"
                     style="width: 150px; margin-left: -30px;">
             @else
-                <img src="{{ asset('/PostBlug/default-profile .png') }}" alt="Default profile photo"
-                    class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
+                <img id="profileImage" src="{{ asset('/PostBlug/default-profile .png') }}" alt="Default profile photo"
+                    class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; margin-left: -30px;">
             @endif
 
             <!-- Profile Name -->
@@ -90,17 +90,15 @@
             url: '{{ route('profile.upload-background-image') }}',
             type: 'POST',
             data: formData,
-
             processData: false,
             contentType: false,
-
             success: function(response) {
                 if (response.success) {
-                    // Update the background image
-                    const imageUrl = response.url;
-                    // Assuming the image is displayed in an img tag with id="coverImage"
-                    const fullPath = '{{ asset('storage/photos') }}/' + response.url;
-                    $('#coverImage').attr('src', fullPath); // Show success message
+                    // Update the cover image
+                    console.log(response.data);
+                    const imageUrl = response.data;
+                    const fullPath = '{{ asset('storage/photos') }}/' + imageUrl;
+                    $('#coverImage').attr('src', fullPath);
                     alert('Background image updated successfully!');
                 } else {
                     alert(response.message || 'Error updating background image');
@@ -123,13 +121,8 @@
 
                 // Re-enable the upload button
                 $('#backgroundPhotoInput').prop('disabled', false);
-
-                // Reset the form
-                $('#backgroundPhotoForm')[0].reset();
             }
         });
-
-
     });
 
 
@@ -162,13 +155,14 @@
 
             success: function(response) {
                 if (response.success) {
-                    // Update the background image
-                    const imageUrl = response.url;
-                    // Assuming the image is displayed in an img tag with id="coverImage"
-                    const fullPath = '{{ asset('storage/photos') }}/' + response.url;
-                    $('#profileImage').attr('src', fullPath); // Show success message
+
+                    // Update the profile image
+                    const imageUrl = response.data.photo_path;
+                    const fullPath = '{{ asset('storage/photos') }}/' + imageUrl;
+                    console.log(fullPath);
+                    $('#profileImage').attr('src', fullPath);
                     alert('Profile image updated successfully!');
-                    $('#post-list ').html(response.html); // Update task list
+                    $('#post-list').html(response.data.html); // Update task list
 
                 } else {
                     alert(response.message || 'Error updating profile image');

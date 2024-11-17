@@ -967,7 +967,7 @@
             });
             }
         });
-        
+
     </script>
 @endsection
 </body>

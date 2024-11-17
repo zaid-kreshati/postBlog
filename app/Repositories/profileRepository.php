@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Description;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Media;
+use App\Models\User;
 
 class ProfileRepository
 {
@@ -24,7 +25,7 @@ class ProfileRepository
     public function getCoverImage()
     {
         $userID=Auth::id();
-        $cover_image=Media::where('mediable_id', $userID)->where('type','user_cover_image')->first();
+        $cover_image=Media::where('mediable_id', $userID)->where('mediable_type',User::class)->where('type','user_cover_image')->first();
         return $cover_image;
     }
 

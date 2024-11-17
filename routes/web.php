@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile/description/delete/{id}', [ProfileController::class, 'deleteDescription']);
     Route::post('/profile/save-descriptions', [ProfileController::class, 'saveDescriptions'])
     ->name('profile.save-descriptions');
+    Route::delete('/profile/remove-profile-image', [ProfileController::class, 'removeProfileImage'])->name('profile.remove-profile-image');
+    Route::delete('/profile/remove-cover-image', [ProfileController::class, 'removeCoverImage'])->name('profile.remove-cover-image');
 
 });
 
@@ -133,4 +135,8 @@ Route::controller(CommentController::class)->prefix('comment')->group(function (
 
 Route::controller(SearchController::class)->prefix('search')->group(function () {
     Route::get('/all', 'searchAll')->name('search.all');
+    Route::get('/posts/with/photo', 'searchPostswithphoto')->name('search.posts.with.photo');
+    Route::get('/posts/with/video', 'searchPostswithvideo')->name('search.posts.with.video');
+    Route::get('/all/posts', 'searchAllPosts')->name('search.all.posts');
+    Route::get('/users', 'searchUsers')->name('search.users');
 });

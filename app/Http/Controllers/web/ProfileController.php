@@ -4,9 +4,6 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\web\Controller;
 use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\Post;
-use App\Models\Media;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Log;
@@ -64,24 +61,24 @@ class ProfileController extends Controller
         $photo_path=$this->mediaService->uploadPhoto($request);
 
 
-        $userId=Auth::id();
+        $user_id=Auth::id();
         $status = 'published';
 
         // Get posts based on the status
         $post_list=$this->postService->postList($status,1);
         $home=false;
-        $html = view('partials.posts', compact('post_list', 'home', 'status'))->render();
+        $html = view('partials.posts', compact('post_list', 'home', 'status','user_id'))->render();
+
+
+        $data=[
+            'html'=>$html,
+            'photo_path'=>$photo_path
+        ];
+
+        return $this->successResponse($data,'Profile image uploaded successfully');
 
 
 
-        return response()->json(
-            [
-                'success' => true,
-                'url' => $photo_path,
-                'message' => 'Profile image uploaded successfully',
-                'html' => $html,
-            ]
-        );
     }
 
     public function upload_background_image(Request $request)
@@ -91,13 +88,9 @@ class ProfileController extends Controller
         $this->profileService->deleteOldCoverImage();
         $photo_path=$this->mediaService->uploadPhoto($request);
 
-        return response()->json(
-            [
-                'success' => true,
-                'url' => $photo_path,
-                'message' => 'Cover image uploaded successfully',
-            ]
-        );
+        return $this->successResponse($photo_path,'Cover image uploaded successfully');
+
+
     }
 
     public function addDescription(Request $request)
@@ -197,6 +190,19 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
+    public function removeProfileImage()
+    {
+        $this->profileService->deleteOldProfileImage();
+        return $this->successResponse(null,'Profile image removed successfully');
+    }
+
+    public function removeCoverImage()
+    {
+        $this->profileService->deleteOldCoverImage();
+        return $this->successResponse(null,'Cover image removed successfully');
+    }
+    
 
 
 
