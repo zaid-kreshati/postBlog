@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
-use App\Http\Controllers\web\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
@@ -29,7 +29,7 @@ class TwoAuthController extends Controller
     public function initiateRegistration(registerRequest $request)
     {
         $this->twoAuthService->initiateRegistration($request->only(['name', 'email', 'password','role']));
-        return redirect()->route('verify.two.factor');
+        return redirect()->route('verify.two.factor.form');
     }
 
 

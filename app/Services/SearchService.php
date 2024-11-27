@@ -12,28 +12,35 @@ class SearchService
         $this->searchRepository = $searchRepository;
     }
 
-    public function searchAll($query)
+    public function searchAll($query,$page)
     {
-        return $this->searchRepository->searchAll($query);
+        return $this->searchRepository->searchAll($query, $page);
     }
 
-    public function searchPostswithphoto($query)
+    public function searchPostswithphoto($query, $page)
     {
-        return $this->searchRepository->searchPostswithphoto($query);
+        return $this->searchRepository->searchPostswithphoto($query, $page);
     }
 
-    public function searchPostswithvideo($query)
+    public function searchPostswithvideo($query, $page)
     {
-        return $this->searchRepository->searchPostswithvideo($query);
+        return $this->searchRepository->searchPostswithvideo($query, $page);
     }
 
-    public function searchAllPosts($query)
+    public function searchAllPosts($query, $page)
     {
-        return $this->searchRepository->searchAllPosts($query);
+        return $this->searchRepository->searchAllPosts($query, $page);
     }
 
-    public function searchUsers($query)
+    public function searchUsers($query, $page)
     {
-        return $this->searchRepository->searchUsers($query);
+        return $this->searchRepository->searchUsers($query, $page);
     }
+
+    public function searchCategory($category_id, $page)
+    {
+        return $this->searchRepository->searchCategory($category_id, $page);
+    }
+
+
 }

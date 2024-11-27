@@ -6,10 +6,18 @@ use App\Models\Post;
 
 class SearchRepository
 {
-    public function searchAll($query)
+    public function searchAll($query, $page = 1)
     {
-        $users = User::where('name', 'like', '%' . $query . '%')->with('media')->get();
-        $posts = Post::where('description', 'like', '%' . $query . '%')->with('user.media','media')->get();
+        $users = User::where('name', 'like', '%' . $query . '%')
+            ->with('media')
+            ->orderBy('created_at', 'desc')
+            ->paginate(2, ['*'], 'page', $page);
+
+        $posts = Post::where('description', 'like', '%' . $query . '%')
+            ->where('status', 'published')
+            ->with('user.media', 'media')
+            ->orderBy('created_at', 'desc')
+            ->paginate(2, ['*'], 'page', $page);
 
         return [
             'users' => $users,
@@ -17,31 +25,77 @@ class SearchRepository
         ];
     }
 
-    public function searchAllPosts($query)
+    public function searchAllPosts($query, $page = 1)
     {
-        $posts = Post::where('description', 'like', '%' . $query . '%')->with('user.media','media')->get();
-        return $posts;
+        $posts = Post::where('description', 'like', '%' . $query . '%')
+            ->where('status', 'published')
+            ->with('user.media', 'media')
+            ->orderBy('created_at', 'desc')
+            ->paginate(4, ['*'], 'page', $page);
+
+        return [
+            'posts' => $posts,
+            'users' => []
+        ];
     }
 
-    public function searchPostswithphoto($query)
+    public function searchPostswithphoto($query, $page = 1)
     {
-        $posts = Post::whereHas('media', function($query) {
-            $query->where('type', 'post_image');
-        })->where('description', 'like', '%' . $query . '%')->with(['media', 'user.media'])->get();
-        return $posts;
+        $posts = Post::whereHas('media', function ($query) {
+                $query->where('type', 'post_image');
+            })
+            ->where('description', 'like', '%' . $query . '%')
+            ->where('status', 'published')
+            ->with(['media', 'user.media'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(4, ['*'], 'page', $page);
+
+        return [
+            'posts' => $posts,
+            'users' => []
+        ];
     }
 
-    public function searchPostswithvideo($query)
+    public function searchPostswithvideo($query, $page = 1)
     {
-        $posts = Post::whereHas('media', function($query) {
-            $query->where('type', 'post_video');
-        })->where('description', 'like', '%' . $query . '%')->with(['media', 'user.media'])->get();
-        return $posts;
+        $posts = Post::whereHas('media', function ($query) {
+                $query->where('type', 'post_video');
+            })
+            ->where('description', 'like', '%' . $query . '%')
+            ->where('status', 'published')
+            ->with(['media', 'user.media'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(4, ['*'], 'page', $page);
+
+        return [
+            'posts' => $posts,
+            'users' => []
+        ];
     }
 
-    public function searchUsers($query)
+    public function searchUsers($query, $page = 1)
     {
-        $users = User::where('name', 'like', '%' . $query . '%')->with('media')->get();
-        return $users;
+        $users = User::where('name', 'like', '%' . $query . '%')
+            ->with('media')
+            ->orderBy('created_at', 'desc')
+            ->paginate(4, ['*'], 'page', $page);
+
+        return [
+            'posts' => [],
+            'users' => $users
+        ];
+    }
+
+    public function searchCategory($category_id, $page = 1)
+    {
+        $posts = Post::where('category_id', $category_id)
+            ->where('status', 'published')
+            ->with('user.media', 'media')
+            ->paginate(4, ['*'], 'page', $page);
+
+        return [
+            'posts' => $posts,
+            'users' => []
+        ];
     }
 }

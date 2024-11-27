@@ -11,6 +11,7 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
+        "chart.js": "^4.4.6",
         "compressorjs": "^1.2.1"
     }
 }
