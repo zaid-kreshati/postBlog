@@ -19,29 +19,7 @@ class CategorySeeder extends Seeder
         ]);
 
         $parentCategory2 = Category::create([
-            'name' => 'private',
-            'parent_id' => null,
-        ]);
-
-        // Create parent categories
-        $parentCategory3 = Category::create([
-            'name' => 'general',
-            'parent_id' => null,
-        ]);
-
-        $parentCategory4 = Category::create([
             'name' => 'social',
-            'parent_id' => null,
-        ]);
-
-        // Create parent categories
-        $parentCategory5 = Category::create([
-            'name' => 'sport',
-            'parent_id' => null,
-        ]);
-
-        $parentCategory6 = Category::create([
-            'name' => 'politic',
             'parent_id' => null,
         ]);
 
@@ -52,63 +30,13 @@ class CategorySeeder extends Seeder
         ]);
 
         Category::create([
-            'name' => 'travel',
+            'name' => 'politic',
             'parent_id' => $parentCategory1->id,
         ]);
 
         Category::create([
-            'name' => 'cars',
-            'parent_id' => $parentCategory2->id,
-        ]);
-
-        Category::create([
-            'name' => 'food',
-            'parent_id' => $parentCategory2->id,
-        ]);
-
-        Category::create([
-            'name' => 'health',
-            'parent_id' => $parentCategory3->id,
-        ]);
-
-        Category::create([
             'name' => 'friends',
-            'parent_id' => $parentCategory3->id,
+            'parent_id' => $parentCategory2->id,
         ]);
-
-
-
-        Category::create([
-            'name' => 'sport',
-            'parent_id' => $parentCategory4->id,
-        ]);
-
-        Category::create([
-            'name' => 'drama',
-            'parent_id' => $parentCategory4->id,
-        ]);
-
-        Category::create([
-            'name' => 'comedy',
-            'parent_id' => $parentCategory5->id,
-        ]);
-
-        Category::create([
-            'name' => 'football',
-            'parent_id' => $parentCategory5->id,
-        ]);
-
-        Category::create([
-            'name' => 'basketball',
-            'parent_id' => $parentCategory6->id,
-        ]);
-
-        Category::create([
-            'name' => 'flower',
-            'parent_id' => $parentCategory6->id,
-        ]);
-
-
-
     }
 }

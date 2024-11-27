@@ -56,7 +56,9 @@ class Kernel extends HttpKernel
      */
     protected $middlewareAliases = [
         'validateToken' => \App\Http\Middleware\ValidateToken::class,
+
         'auth' => \App\Http\Middleware\Authenticate::class,
+
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
@@ -72,4 +74,7 @@ class Kernel extends HttpKernel
         'checkAdminAuth' => \App\Http\Middleware\CheckAdminAuth::class,
     ];
 
+    protected $routeMiddleware = [
+        '2fa' => Google2FA::class,
+    ];
 }

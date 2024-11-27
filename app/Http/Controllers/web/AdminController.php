@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Http\Requests\Auth\loginRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
 
 class AdminController extends Controller
 {

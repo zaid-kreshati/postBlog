@@ -11,7 +11,6 @@ use App\Http\Controllers\web\TwoAuthController;
 use App\Http\Controllers\web\CategoryController;
 use App\Http\Controllers\web\CommentController;
 use App\Http\Controllers\web\SearchController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,104 +22,121 @@ use App\Http\Controllers\web\SearchController;
 |
 */
 
-Route::view('/', 'welcome');
+Route::get('/', function () {
+    return view('welcome');
+});
 
-Route::view('/admin', 'DashBoard.welcome')->name('admin');
+Route::get('/admin', function () {
+    return view('DashBoard.welcome');
+})->name('admin');
 
-Route::view('/test', 'test');
 
-// Auth Routes
+Route::get('/test', function () {
+    return view('test');
+});
+
+
 Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login.form');
     Route::post('/login', 'login')->name('login');
     Route::post('/logout', 'logout')->name('logout');
     Route::get('/register', 'showRegisterForm')->name('register.form');
+   // Route::post('/register/user', 'register_user')->name('register.user');
+
 });
 
-// Home Routes
-Route::controller(HomeController::class)->middleware('auth')->group(function () {
-    Route::get('/home', 'index')->name('home');
-    Route::get('/search', 'search')->name('searchview');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 
-// Profile Routes
-Route::controller(ProfileController::class)->middleware('auth')->prefix('profile')->name('profile.')->group(function () {
-    Route::get('/{id?}', 'index')->name('index');
-    Route::put('/upload-profile-image', 'upload_profile_image')->name('upload-profile-image');
-    Route::put('/upload-background-image', 'upload_background_image')->name('upload-background-image');
-    Route::post('/description/add', 'addDescription')->name('add-description');
-    Route::put('/description/update/{id}', 'updateDescription');
-    Route::delete('/description/delete/{id}', 'deleteDescription');
-    Route::post('/save-descriptions', 'saveDescriptions')->name('save-descriptions');
-    Route::delete('/remove-profile-image', 'removeProfileImage')->name('remove-profile-image');
-    Route::delete('/remove-cover-image', 'removeCoverImage')->name('remove-cover-image');
-    Route::get('/show/{id}', 'show')->name('show');
-    Route::post('/switch-privacy', 'switchPrivacy')->name('switch-privacy');
+//profile
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile/upload-profile-image', [ProfileController::class, 'upload_profile_image'])->name('profile.upload-profile-image');
+    Route::put('/profile/upload-background-image', [ProfileController::class, 'upload_background_image'])->name('profile.upload-background-image');
+    Route::post('profile/description/add', [ProfileController::class, 'addDescription'])->name('profile.add-description');
+    Route::put('profile/description/update/{id}', [ProfileController::class, 'updateDescription']);
+    Route::delete('profile/description/delete/{id}', [ProfileController::class, 'deleteDescription']);
+    Route::post('/profile/save-descriptions', [ProfileController::class, 'saveDescriptions'])
+    ->name('profile.save-descriptions');
+    Route::delete('/profile/remove-profile-image', [ProfileController::class, 'removeProfileImage'])->name('profile.remove-profile-image');
+    Route::delete('/profile/remove-cover-image', [ProfileController::class, 'removeCoverImage'])->name('profile.remove-cover-image');
+
 });
 
-// Post Routes
-Route::controller(PostController::class)->middleware('auth')->prefix('posts')->name('posts.')->group(function () {
-    Route::post('/store', 'store')->name('store');
-    Route::put('/{id}/update', 'update')->name('update');
-    Route::patch('/{id}/archive', 'archive')->name('archive');
-    Route::post('/filter', 'filterPosts')->name('filter');
-    Route::delete('/media/{id}/delete', 'deleteMedia')->name('media.delete');
-    Route::delete('/{id}/delete', 'deletePost')->name('delete');
-    Route::post('/{id}/publish', 'publishPost')->name('publish');
-    Route::get('/list', 'postList')->name('list');
-    Route::get('/load-more', 'loadMorePosts')->name('load-more');
+
+//post
+Route::middleware('auth')->group(function () {
+    Route::post('/post/store', [PostController::class, 'store'])->name('post.store');
+    Route::put('/posts/{id}/update', [PostController::class, 'update'])->name('post.update');
+    Route::patch('/posts/{id}/archive', [PostController::class, 'archive'])->name('post.archive');
+    Route::post('/posts/filter', [PostController::class, 'filterPosts'])->name('posts.filter');
+    Route::delete('/media/{id}/delete', [PostController::class, 'deleteMedia'])->name('media.delete');
+    Route::delete('/posts/{id}/delete', [PostController::class, 'deletePost'])->name('post.delete');
+    Route::post('/posts/{id}/publish', [PostController::class, 'publishPost'])->name('post.publish');
+    Route::get('/posts/list', [PostController::class, 'postList'])->name('posts.list');
+
+    Route::get('/posts/load-more', [PostController::class, 'loadMorePosts'])->name('posts.load-more');
+
 });
 
-// Two Factor Routes
-Route::controller(TwoAuthController::class)->prefix('two-factor')->name('verify.two.factor.')->group(function () {
-    Route::get('/verify', 'showVerifyForm')->name('form');
-    Route::post('/verify', 'initiateRegistration')->name('code');
-    Route::get('/resend', 'resendTwoFactorCode')->name('resend');
-    Route::post('/register/initiate', 'initiateRegistration')->name('register.initiate');
-    Route::post('/register/verify', 'verifyRegistration')->name('register.verify');
+//two factor
+Route::get('/verify-two-factor', [TwoAuthController::class, 'showVerifyForm'])->name('verify.two.factor');
+Route::post('/verify-two-factor', [TwoAuthController::class, 'initiateRegistration'])->name('verify.two.factor.code');
+Route::get('/resend-two-factor-code', [TwoAuthController::class, 'resendTwoFactorCode'])->name('resend.2fa');
+Route::post('/register/initiate', [TwoAuthController::class, 'initiateRegistration'])->name('register.initiate');
+Route::post('/register/verify', [TwoAuthController::class, 'verifyRegistration'])->name('register.verify');
+
+
+
+
+Route::controller(AdminController::class)->prefix('admin')->group(function () {
+    Route::get('/login', 'showLoginForm')->name('login.form.admin');
+    Route::post('/login', 'login')->name('login.admin');
+    Route::post('/logout', 'logout')->name('DashBoard.logout')->middleware('checkAdminAuth');
+    Route::get('/register', 'showRegisterForm')->name('register.form.admin');
+    Route::post('/register', 'register')->middleware('auth:api')->name('register.admin')->middleware('checkAdmin');
+    Route::get('/home', 'index')->name('DashBoard.home')->middleware('checkAdminAuth');
 });
 
-// Admin Routes
-Route::controller(AdminController::class)->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/login', 'showLoginForm')->name('login.form');
-    Route::post('/login', 'login')->name('login');
-    Route::post('/logout', 'logout')->name('logout')->middleware('checkAdminAuth');
-    Route::get('/register', 'showRegisterForm')->name('register.form');
-    Route::post('/register', 'register')->middleware(['auth:api', 'checkAdmin'])->name('register');
-    Route::get('/home', 'index')->name('home')->middleware('checkAdminAuth');
+
+Route::controller(CategoryController::class)->prefix('admin')->group(function () {
+    Route::get('/categories', 'index')->name('categories.index');
+    Route::get('/categories/create', 'create')->name('categories.create');
+    Route::post('/categories', 'store')->name('categories.store');
+    Route::get('/categories/{id}/edit', 'edit')->name('categories.edit');
+    Route::put('/categories/{id}', 'update')->name('categories.update');
+    Route::delete('/categories/{id}', 'destroy')->name('categories.destroy');
+    Route::get('/categories/{id}/nested', 'getNestedCategories')->name('nestedCategories');
+    Route::post('/categories/search', 'search')->name('categories.search');
+    Route::post('/categories/paginate', 'paginate')->name('categories.paginate');
+    //Route::get('/categories/{id}/children', 'getChildren')->name('categories.children');
+    Route::get('/categories/{category}/children', 'getChildren')->name('categories.children');
+
+
+
+    Route::get('/categories/index',  'index2')->name('categories.index2');
+    Route::get('/categories/{parentId}/children', 'getChildren')->name('categories.children');
+
+    Route::get('/categories',  'index')->name('categories.index');
+    Route::get('/categories/{category}/children',  'getChildren')->name('categories.children');
+
 });
 
-// Category Routes
-Route::controller(CategoryController::class)->prefix('admin/categories')->name('categories.')->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::get('/create', 'create')->name('create');
-    Route::post('/', 'store')->name('store');
-    Route::get('/{id}/edit', 'edit')->name('edit');
-    Route::put('/{id}', 'update')->name('update');
-    Route::delete('/{id}', 'destroy')->name('destroy');
-    Route::get('/{id}/nested', 'getNestedCategories')->name('nested');
-    Route::post('/search', 'search')->name('search');
-    Route::post('/paginate', 'paginate')->name('paginate');
-    Route::get('/{category}/children', 'getChildren')->name('children');
+Route::controller(CommentController::class)->prefix('comment')->group(function () {
+    Route::post('/store', 'store')->name('comment.store');
+    Route::get('/{postId}', 'index')->name('comment.index');
+    Route::delete('/{id}', 'destroy')->name('comment.destroy');
+    Route::put('/{id}', 'update')->name('comment.update');
+    Route::post('/store/nested', 'storeNested')->name('comment.store.nested');
+    Route::get('/get/nested', 'getNestedComments')->name('comment.get.nested');
 });
 
-// Comment Routes
-Route::controller(CommentController::class)->prefix('comment')->name('comment.')->group(function () {
-    Route::post('/store', 'store')->name('store');
-    Route::get('/{postId}', 'index')->name('index');
-    Route::delete('/{id}', 'destroy')->name('destroy');
-    Route::put('/{id}', 'update')->name('update');
-    Route::post('/store/nested', 'storeNested')->name('store.nested');
-    Route::get('/get/nested', 'getNestedComments')->name('get.nested');
-});
-
-// Search Routes
-Route::controller(SearchController::class)->prefix('search')->name('search.')->group(function () {
-    Route::get('/all', 'searchAll')->name('all');
-    Route::get('/posts/with/photo', 'searchPostswithphoto')->name('posts.with.photo');
-    Route::get('/posts/with/video', 'searchPostswithvideo')->name('posts.with.video');
-    Route::get('/all/posts', 'searchAllPosts')->name('all.posts');
-    Route::get('/users', 'searchUsers')->name('users');
-    Route::get('/load-more', 'loadMoreResults')->name('load-more');
-    Route::get('/category', 'searchCategory')->name('category');
+Route::controller(SearchController::class)->prefix('search')->group(function () {
+    Route::get('/all', 'searchAll')->name('search.all');
+    Route::get('/posts/with/photo', 'searchPostswithphoto')->name('search.posts.with.photo');
+    Route::get('/posts/with/video', 'searchPostswithvideo')->name('search.posts.with.video');
+    Route::get('/all/posts', 'searchAllPosts')->name('search.all.posts');
+    Route::get('/users', 'searchUsers')->name('search.users');
 });

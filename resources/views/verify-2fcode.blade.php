@@ -28,7 +28,7 @@
             @csrf
 
             <div class="flex items-center justify-between">
-                <a href="{{ route('verify.two.factor.resend') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                <a href="{{ route('resend.2fa') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
                     Resend Code
                 </a>
             </div>

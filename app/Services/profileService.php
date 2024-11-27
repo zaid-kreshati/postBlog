@@ -19,14 +19,14 @@ class ProfileService
         return $this->profileRepository->getDescriptions();
     }
 
-    public function getProfileImage($owner_id)
+    public function getProfileImage()
     {
-        return $this->profileRepository->getProfileImage($owner_id);
+        return $this->profileRepository->getProfileImage();
     }
 
-    public function getCoverImage($owner_id)
+    public function getCoverImage()
     {
-        return $this->profileRepository->getCoverImage($owner_id);
+        return $this->profileRepository->getCoverImage();
     }
 
     public function deleteOldCoverImage()
@@ -58,16 +58,5 @@ class ProfileService
     {
         return $this->profileRepository->saveDescriptions($request);
     }
-
-    public function checkIfImageExists($image_name)
-    {
-        return $this->profileRepository->checkIfImageExists($image_name);
-    }
-
-    public function switchPrivacy($status)
-    {
-        return $this->profileRepository->switchPrivacy($status);
-    }
-
 
 }

@@ -1,21 +1,32 @@
 <div id="profile-media">
     <!-- Cover Image -->
-    <div class="img-fluid img-thumbnail mt-4 mb-2 position-relative" style="position: relative;">
-        @if ($cover_image)
-            <img id="coverImage" name="cover_image" src="{{ asset('storage/photos/' . $cover_image->URL) }}" alt="Profile photo"
-                 style="width: 100%; height: 250px; z-index: 1">
-        @else
-            <img id="coverImage" src="{{ asset('/PostBlug/default cover image.jpeg') }}" alt="Default cover image"
-                 style="width: 100%; height: 250px; z-index: 1">
-        @endif
+    @if ($cover_image)
+        <img id="coverImage" name="cover_image" src="{{ asset('storage/photos/' . $cover_image->URL) }}" alt="Profile photo"
+            class="img-fluid img-thumbnail mt-4 mb-2" style="width: 100%; height: 250px; z-index: 1">
+    @else
+        <img id="coverImage" src="{{ asset('/PostBlug/default cover image.jpeg') }}" alt="Default cover image"
+            class="img-fluid img-thumbnail mt-4 mb-2" style="width: 100%; height: 250px; z-index: 1">
+    @endif
 
-        <!-- Cover Image Form -->
-        @if ($is_owner)
-            <img src="{{ asset('PostBlug/takePhoto.png') }}" alt="{{ __('Edit') }}" class="icon4" data-bs-toggle="modal"
-            data-bs-target="#backgroundPhotoModal">
-        @endif
+    <!-- Cover Image Form -->
+    <form id="backgroundPhotoForm" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <input type="file" name="cover_image" id="backgroundPhotoInput" style="display: none;" accept="image/*">
+        <label for="backgroundPhotoInput">
+            <img src="{{ asset('PostBlug/takePhoto.png') }}" alt="{{ __('Take Photo') }}" class="icon2">
+        </label>
+
+    </form>
+
+    <!-- Loading Spinner -->
+    <div id="uploadSpinner"
+        style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+        class="position-absolute">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
-
 
 
 
@@ -28,7 +39,7 @@
                     alt="Profile photo" class="img-fluid img-thumbnail mt-4 mb-2"
                     style="width: 150px; margin-left: -30px;">
             @else
-                <img id="profileImage" src="{{ asset('/PostBlug/default-profile.png') }}" alt="Default profile photo"
+                <img id="profileImage" src="{{ asset('/PostBlug/default-profile .png') }}" alt="Default profile photo"
                     class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; margin-left: -30px;">
             @endif
 
@@ -39,53 +50,20 @@
 
 
             <!-- Profile Image Form -->
-            @if ($is_owner)
-                <img src="{{ asset('PostBlug/takePhoto.png') }}" alt="{{ __('Edit') }}" class="icon5" data-bs-toggle="modal" data-bs-target="#profilePhotoModal">
-            @endif
+            <form id="profilePhotoForm" action="{{ route('profile.upload-profile-image') }}" method="POST"
+                enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <input type="file" name="profile_photo" id="profilePhotoInput" style="display: none;"
+                    accept="image/*">
+                <label for="profilePhotoInput">
+                    <img src="{{ asset('PostBlug/takePhoto.png') }}" alt="{{ __('Take Photo') }}" class="icon">
+                </label>
+            </form>
         </div>
+
+
     </div>
-
-
-      <!-- Cover Modal -->
-      <div class="modal fade" id="backgroundPhotoModal" role="dialog" tabindex="-1" aria-labelledby="backgroundPhotoModalLabel">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="backgroundPhotoModalLabel">Edit Cover Image</h5>
-                </div>
-                <form id="backgroundPhotoForm" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <input type="file" name="cover_image" id="backgroundPhotoInput" style="display: none;" accept="image/*">
-                    <label for="backgroundPhotoInput" class="btn-post" style="cursor: pointer;">Upload New Image</label>
-                    <button type="button" class="btn-post" id="removeCoverImage">Remove Image</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Profile Modal -->
-    <div class="modal fade" id="profilePhotoModal" role="dialog" tabindex="-1" aria-labelledby="profilePhotoModalLabel">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="profilePhotoModalLabel">Edit Profile Image</h5>
-                </div>
-                <form id="profilePhotoForm" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <input type="file" name="profile_image" id="profilePhotoInput" style="display: none;  " accept="image/*">
-                    <label for="profilePhotoInput" class="btn-post" style="cursor: pointer;">Upload New Image</label>
-                    <button type="button" class="btn-post" id="removeProfileImage">Remove Image</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-
 </div>
 
 <script>
@@ -101,6 +79,11 @@
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('_method', 'PUT');
 
+        // Show loading spinner
+        $('#uploadSpinner').show();
+
+        // Disable the upload button
+        $(this).prop('disabled', true);
 
         // Make AJAX request
         $.ajax({
@@ -111,32 +94,14 @@
             contentType: false,
             success: function(response) {
                 if (response.success) {
-                    // Wait one second then update the cover image
-                        console.log(response.data);
-                        const imageUrl = response.data;
-                        const fullPath = '{{ asset('storage/photos') }}/' + imageUrl;
-                        $('#coverImage').attr('src', fullPath);
-                        $('#backgroundPhotoModal').hide();
-                        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Cover image updated successfully!',
-            timer: 1000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-
-                        // Remove modal backdrop manually
-                        $('.modal-backdrop').remove();
-                        // Restore body scrolling
-                        $('body').removeClass('modal-open').css('overflow', '');
-                        $('body').css('padding-right', '');
+                    // Update the cover image
+                    console.log(response.data);
+                    const imageUrl = response.data;
+                    const fullPath = '{{ asset('storage/photos') }}/' + imageUrl;
+                    $('#coverImage').attr('src', fullPath);
+                    alert('Background image updated successfully!');
                 } else {
-                    Swal.fire({
-                        title: "Error",
-                        text: response.message || 'Error updating background image',
-                        icon: "error"
-                    });
+                    alert(response.message || 'Error updating background image');
                 }
             },
             error: function(xhr) {
@@ -144,76 +109,21 @@
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(key => {
-                        Swal.fire({
-                            title: "Error",
-                            text: errors[key][0],
-                            icon: "error"
-                        });
+                        alert(errors[key][0]);
                     });
                 } else {
-                    Swal.fire({
-                        title: "Error",
-                        text: 'An error occurred while uploading the image',
-                        icon: "error"
-                    });
+                    alert('An error occurred while uploading the image');
                 }
             },
             complete: function() {
+                // Hide loading spinner
+                $('#uploadSpinner').hide();
+
                 // Re-enable the upload button
                 $('#backgroundPhotoInput').prop('disabled', false);
             }
         });
     });
-
-// Remove Cover Image
-$('#removeCoverImage').on('click', function() {
-
-
-    // Make AJAX request to remove the cover image
-    $.ajax({
-        url: '{{ route('profile.remove-cover-image') }}',
-        type: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        success: function(response) {
-            if (response.success) {
-                    $('#coverImage').attr('src', '{{ asset('/PostBlug/default cover image.jpeg') }}');
-                    $('#backgroundPhotoModal').hide();
-                    Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Cover image removed successfully!',
-            timer: 1000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-
-                    // Remove modal backdrop manually
-                    $('.modal-backdrop').remove();
-                    // Restore body scrolling
-                    $('body').removeClass('modal-open').css('overflow', '');
-                    $('body').css('padding-right', '');
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: response.message || 'Error removing cover image',
-                    icon: "error"
-                });
-            }
-        },
-        error: function(xhr) {
-            Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'there is no cover image',
-        });
-        },
-        complete: function() {
-
-        }
-    });
-});
 
 
     // Profile Photo Upload
@@ -228,11 +138,11 @@ $('#removeCoverImage').on('click', function() {
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('_method', 'PUT');
 
-
+        // Show loading spinner
+        $('#uploadSpinner').show();
 
         // Disable the upload button
         $(this).prop('disabled', true);
-
 
         // Make AJAX request
         $.ajax({
@@ -249,30 +159,13 @@ $('#removeCoverImage').on('click', function() {
                     // Update the profile image
                     const imageUrl = response.data.photo_path;
                     const fullPath = '{{ asset('storage/photos') }}/' + imageUrl;
+                    console.log(fullPath);
                     $('#profileImage').attr('src', fullPath);
-                    $('#profilePhotoModal').hide();
-                   // Show success message with SweetAlert2
-        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Profile image updated successfully!',
-            timer: 1000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
+                    alert('Profile image updated successfully!');
                     $('#post-list').html(response.data.html); // Update task list
-                    // Remove modal backdrop manually
-                    $('.modal-backdrop').remove();
-                    // Restore body scrolling
-                    $('body').removeClass('modal-open').css('overflow', '');
-                    $('body').css('padding-right', '');
 
                 } else {
-                    Swal.fire({
-                        title: "Error",
-                        text: response.message || 'Error updating profile image',
-                        icon: "error"
-                    });
+                    alert(response.message || 'Error updating profile image');
                 }
             },
             error: function(xhr) {
@@ -280,22 +173,15 @@ $('#removeCoverImage').on('click', function() {
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(key => {
-                        Swal.fire({
-                            title: "Error",
-                            text: errors[key][0],
-                            icon: "error"
-                        });
+                        alert(errors[key][0]);
                     });
                 } else {
-                    Swal.fire({
-                        title: "Error",
-                        text: 'An error occurred while uploading the image',
-                        icon: "error"
-                    });
+                    alert('An error occurred while uploading the image');
                 }
             },
             complete: function() {
-
+                // Hide loading spinner
+                $('#uploadSpinner').hide();
 
                 // Re-enable the upload button
                 $('#profilePhotoInput').prop('disabled', false);
@@ -305,53 +191,4 @@ $('#removeCoverImage').on('click', function() {
             }
         });
     });
-
-// Remove Profile Image
-$('#removeProfileImage').on('click', function() {
-
-
-    // Make AJAX request to remove the profile image
-    $.ajax({
-        url: '{{ route('profile.remove-profile-image') }}',
-        type: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        success: function(response) {
-            if (response.success) {
-                    $('#profileImage').attr('src', '{{ asset('/PostBlug/default-profile.png') }}');
-                    $('#profilePhotoModal').hide();
-                    Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Profile image removed successfully!',
-            timer: 1000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-                    // Remove modal backdrop manually
-                    $('.modal-backdrop').remove();
-                    // Restore body scrolling
-                    $('body').removeClass('modal-open').css('overflow', '');
-                    $('body').css('padding-right', '');
-            } else {
-                Swal.fire({
-                    title: "Error",
-                    text: response.message || 'Error removing profile image',
-                    icon: "error"
-                });
-            }
-        },
-        error: function(xhr) {
-            Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'there is no profile image',
-        });
-        },
-        complete: function() {
-
-        }
-    });
-});
 </script>

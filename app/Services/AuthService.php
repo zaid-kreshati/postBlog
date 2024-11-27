@@ -59,8 +59,7 @@ class AuthService
             $user = Auth::user();
 
             // Generate a new token for the authenticated user
-            $token = $user->createToken('MyApp')->accessToken;
-            $role=$user->roles->first()->name;
+            $token = $user->createToken('Token Name')->accessToken;
 
 
             // Return the user and token information
@@ -76,15 +75,6 @@ class AuthService
                 'message' => 'Invalid credentials.',
             ];
         }
-    }
-
-    public function logout()
-    {
-        Auth::user()->tokens()->delete();
-        return [
-            'status' => 'success',
-            'message' => 'Logged out successfully.',
-        ];
     }
 
 

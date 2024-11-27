@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Exceptions\ValidationFailedException;
 use Illuminate\Contracts\Validation\Validator;
 
-class RegisterRequest extends FormRequest
+class registerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

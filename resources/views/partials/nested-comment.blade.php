@@ -1,5 +1,6 @@
 <div id="nested-comments-section-{{ $comment->id }}">
-    @foreach ($comment->nestedComments as $nestedComment)
+    @if ($nestedComments)
+    @foreach ($nestedComments as $nestedComment)
         <div class="comments-section" id="nested-comment">
             <!-- Single Comment -->
             <div class="comment">
@@ -14,7 +15,7 @@
                             @endif
                         @endforeach
                     @else
-                        <img src="{{ asset('/PostBlug/default-profile.png') }}" alt="Profile photo"
+                        <img src="{{ asset('/PostBlug/default-profile .png') }}" alt="Profile photo"
                             class="img-fluid rounded-circle"
                             style="width: 50px; height: 50px; object-fit: fill; margin-right: 750px;">
                     @endif
@@ -30,4 +31,5 @@
             </div>
         </div>
     @endforeach
+    @endif
 </div>

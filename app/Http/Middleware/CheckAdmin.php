@@ -20,6 +20,6 @@ class CheckAdmin
         }
 
         // Return unauthorized JSON response if the user is not an admin
-        return $this->errorResponse('Unauthorized', 401);
+        return $request->expectsJson() ? null : route('login.admin');
     }
 }

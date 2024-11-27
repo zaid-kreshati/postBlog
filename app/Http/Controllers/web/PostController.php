@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Traits\JsonResponseTrait;
 use App\Traits\ChecksModelExistence;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+
 
 class PostController extends Controller
 {
@@ -37,56 +37,48 @@ class PostController extends Controller
     {
         Log::info($request->all());
         $post = $this->postService->createPost($request);
-        $status="published";
+        $status=$post->status;
         $post_list=$this->postService->postList($status,1);
         $home=false;
         $user_id=Auth::id();
-        $is_owner=true;
-        $Categories=$this->categoryService->getParentNullCategorieswithoutpagination();
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
-        $html2= view('partials.editPost', compact('Categories'))->render();
-        return $this->successResponse(['html'=>$html, 'html2'=>$html2], 'Post created successfully');
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
+        return $this->successResponse(['html'=>$html], 'Post created successfully');
     }
 
 
     public function update(UpdatePostRequest $request, $id): JsonResponse
     {
-        Log::info($request->all());
+
         $post = $this->postService->updatePost($id, $request);
         $status=$post->status;
         $post_list=$this->postService->postList($status,$request->page ?? 1);
         $home=false;
         $user_id=Auth::id();
-        $is_owner=true;
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
         return $this->successResponse(['html'=>$html], 'Post updated successfully');
     }
 
     public function archive($id): JsonResponse
     {
-        $status="published";
+        $status="archived";
         $this->postService->archive($id);
         $post_list=$this->postService->postList($status,1);
         Log::info("post_list");
         Log::info($post_list);
         $home=false;
         $user_id=Auth::id();
-        $is_owner=true;
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
         return $this->successResponse(['html'=>$html], 'Post archived successfully');
     }
 
     public function filterPosts(Request $request)
     {
-        Log::info($request->all());
         $status = $request->input('status');
         // Get posts based on the status
-        $post_list=$this->postService->postList($status,1);
-        Log::info($post_list);
-        $is_owner=true;
+        $post_list=$this->postService->filterPosts($status);
         $home=false;
         $user_id=Auth::id();
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
 
         return response()->json(['success' => true, 'html' => $html]);
     }
@@ -99,26 +91,24 @@ class PostController extends Controller
 
     public function deletePost($id): JsonResponse
     {
-        $status="published";
+        $status="archived";
 
         $this->postService->deletePost($id);
         $post_list=$this->postService->postList($status,1);
         $home=false;
         $user_id=Auth::id();
-        $is_owner=true;
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
         return $this->successResponse(['html'=>$html], 'Post deleted successfully');
     }
 
     public function publishPost($id, Request $request): JsonResponse
     {
-        $status = "published";
+        $status = $request->input('status');
         $this->postService->publishPost($id, $status);
         $post_list=$this->postService->postList($status,1);
         $home=false;
         $user_id=Auth::id();
-        $is_owner=true;
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
         return $this->successResponse(['html'=>$html], 'Post published successfully');
     }
 
@@ -131,8 +121,10 @@ class PostController extends Controller
             $home=false;
         }
         else $home=true;
-        $is_owner=$request['is_owner'];
-        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id', 'is_owner'))->render();
+
+
+
+        $html = view('partials.posts', compact('post_list', 'home', 'status', 'user_id'))->render();
         return $this->successResponse(['html'=>$html, 'hasMorePages'=>$post_list->hasMorePages()], 'Posts fetched successfully');
     }
 

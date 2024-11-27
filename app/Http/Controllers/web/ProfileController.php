@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\web\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -34,41 +34,27 @@ class ProfileController extends Controller
         $this->categoryService = $categoryService;
     }
 
-    public function index($id=null)
+    public function index()
     {
-        if($id==null){
-            $owner_id=Auth::id();
-        }else{
-            $owner_id=$id;
-        }
-        if($owner_id==Auth::id()){
-            $is_owner=true;
-        }else{
-            $is_owner=false;
-        }
-
-
         $status='published';
         $profile_image=null;
         $cover_image=null;
         $descriptions=$this->profileService->getDescriptions();
         $Categories=$this->categoryService->getParentNullCategorieswithoutpagination();
         $post_list=$this->postService->postList($status,1);
-        $profile_image=$this->profileService->getProfileImage($owner_id);
-        $cover_image=$this->profileService->getCoverImage($owner_id);
-        $Users=User::where('id','!=',$owner_id)->get();
+        $profile_image=$this->profileService->getProfileImage();
+        $cover_image=$this->profileService->getCoverImage();
+        $Users=User::all();
         $home=false;
-        $name=User::find($owner_id)->name;
-        $user_id=$owner_id;
-        $privacy_on=User::find($owner_id)->is_private;
-        return view('profile', compact('Categories', 'post_list', 'profile_image', 'cover_image', 'descriptions', 'home', 'name', 'Users', 'status', 'user_id','is_owner','privacy_on'));
+        $name=Auth::user()->name;
+        $user_id=Auth::id();
+        //return $post_list;
+        return view('profile', compact('Categories', 'post_list', 'profile_image', 'cover_image', 'descriptions', 'home', 'name', 'Users', 'status', 'user_id'));
     }
 
     public function upload_profile_image(Request $request)
     {
 
-        Log::info('upload_profile_image');
-        Log::info($request->all());
         $request['type']='user_profile_image';
         $this->profileService->deleteOldProfileImage();
 
@@ -98,7 +84,6 @@ class ProfileController extends Controller
     public function upload_background_image(Request $request)
     {
 
-        Log::info($request->all());
         $request['type']='user_cover_image';
         $this->profileService->deleteOldCoverImage();
         $photo_path=$this->mediaService->uploadPhoto($request);
@@ -110,24 +95,37 @@ class ProfileController extends Controller
 
     public function addDescription(Request $request)
     {
+        Log::info($request->all());
         $description=$this->profileService->addDescription($request);
-        return $this->successResponse($description,'Description added successfully');
-
-
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Description added successfully',
+                'description' => $description
+            ]
+        );
     }
 
     public function updateDescription(Request $request, $id)
     {
         $this->profileService->updateDescription($request, $id);
-        return $this->successResponse(null,'Description updated successfully');
-
-
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Description updated successfully',
+            ]
+        );
     }
 
     public function deleteDescription($id)
     {
         $this->profileService->deleteDescription($id);
-        return $this->successResponse(null,'Description deleted successfully');
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Description deleted successfully',
+            ]
+        );
     }
 
     public function saveDescriptions(Request $request)
@@ -174,52 +172,39 @@ class ProfileController extends Controller
             // Return updated descriptions
             $descriptions = Description::where('user_id', $userId)->get();
             $home=false;
-            $is_owner=true;
-            $html = view('partials.Descriptions', compact('descriptions', 'home','is_owner'))->render();
-            return $this->successResponse($html,'Descriptions saved successfully');
+            $html = view('partials.Descriptions', compact('descriptions', 'home'))->render();
+            return response()->json([
+                'success' => true,
+                'message' => 'Descriptions saved successfully',
+                'html' => $html
+
+            ]);
 
         } catch (\Exception $e) {
             Log::info($e->getMessage());
 
             DB::rollBack();
-            return $this->errorResponse('Error saving descriptions: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving descriptions: ' . $e->getMessage()
+            ], 500);
         }
     }
 
     public function removeProfileImage()
     {
-        $image=$this->profileService->checkIfImageExists('user_profile_image');
-        if($image){
-            $this->profileService->deleteOldProfileImage();
-            return $this->successResponse(null,'Profile image removed successfully');
-        }
-        else{
-            return $this->errorResponse('Profile image not found');
-        }
+        $this->profileService->deleteOldProfileImage();
+        return $this->successResponse(null,'Profile image removed successfully');
     }
 
     public function removeCoverImage()
     {
-        $image=$this->profileService->checkIfImageExists('user_cover_image');
-        if($image){
-            $this->profileService->deleteOldCoverImage();
-            return $this->successResponse(null,'Cover image removed successfully');
-
-        }
-        else{
-            return $this->errorResponse('Cover image not found');
-        }
+        $this->profileService->deleteOldCoverImage();
+        return $this->successResponse(null,'Cover image removed successfully');
     }
+    
 
 
-
-    public function switchPrivacy(Request $request)
-    {
-        Log::info($request->all());
-        $status=$request->privacy_on;
-        $this->profileService->switchPrivacy($status);
-        return $this->successResponse(null,'Privacy switched successfully');
-    }
 
 
 }

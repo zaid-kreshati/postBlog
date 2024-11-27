@@ -14,154 +14,26 @@ class DescriptionSeeder extends Seeder
     {
         // Create some sample descriptions
         Description::create([
-            'text' => 'I am a software engineer',
+            'text' => 'This is the first description.',
             'user_id' => '1',
         ]);
 
         Description::create([
-            'text' => 'study at Damascus university',
-            'user_id' => '1',
-
-        ]);
-
-        Description::create([
-            'text' => 'specialized in backend development',
+            'text' => 'This is the second description.',
             'user_id' => '1',
 
         ]);
 
         Description::create([
-            'text' => 'lives in Damascus, Syria',
-            'user_id' => '1',
-
-        ]);
-
-        // user 2
-         // Create some sample descriptions
-         Description::create([
-            'text' => 'I am a software engineer',
-            'user_id' => '2',
-        ]);
-
-        Description::create([
-            'text' => 'study at Damascus university',
+            'text' => 'This is the third description.',
             'user_id' => '2',
 
         ]);
 
         Description::create([
-            'text' => 'specialized in backend development',
+            'text' => 'This is the fourth description.',
             'user_id' => '2',
 
         ]);
-
-        Description::create([
-            'text' => 'lives in Damascus, Syria',
-            'user_id' => '2',
-
-        ]);
-
-
-        // user 3
-        Description::create([
-            'text' => 'I am a software engineer',
-            'user_id' => '3',
-        ]);
-
-        Description::create([
-            'text' => 'study at Damascus university',
-            'user_id' => '3',
-
-        ]);
-
-        Description::create([
-            'text' => 'specialized in backend development',
-            'user_id' => '3',
-
-        ]);
-
-        Description::create([
-            'text' => 'lives in Damascus, Syria',
-            'user_id' => '3',
-
-        ]);
-
-        // user 4
-        Description::create([
-            'text' => 'I am a software engineer',
-            'user_id' => '4',
-        ]);
-
-        Description::create([
-            'text' => 'study at Damascus university',
-            'user_id' => '4',
-
-        ]);
-
-        Description::create([
-            'text' => 'specialized in backend development',
-            'user_id' => '4',
-
-        ]);
-
-        Description::create([
-            'text' => 'lives in Damascus, Syria',
-            'user_id' => '4',
-
-        ]);
-
-        // user 5
-        Description::create([
-            'text' => 'I am a software engineer',
-            'user_id' => '5',
-        ]);
-
-        Description::create([
-            'text' => 'study at Damascus university',
-            'user_id' => '5',
-
-        ]);
-
-        Description::create([
-            'text' => 'specialized in backend development',
-            'user_id' => '5',
-
-        ]);
-
-        Description::create([
-            'text' => 'lives in Damascus, Syria',
-            'user_id' => '5',
-
-        ]);
-
-        // user 6
-        Description::create([
-            'text' => 'I am a software engineer',
-            'user_id' => '6',
-        ]);
-
-        Description::create([
-            'text' => 'study at Damascus university',
-            'user_id' => '6',
-
-        ]);
-
-        Description::create([
-            'text' => 'specialized in backend development',
-            'user_id' => '6',
-
-        ]);
-
-        Description::create([
-            'text' => 'lives in Damascus, Syria',
-            'user_id' => '6',
-
-        ]);
-
-
-
-
-
-
     }
 }

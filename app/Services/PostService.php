@@ -35,9 +35,6 @@ class PostService
 
         // Handle Photos
         if ($data->hasFile('photos')) {
-            Log::info('photos');
-            Log::info($data['photos']);
-
             foreach ($data['photos'] as $photo) {
                 // Create unique filename
                 $compressedPhoto = $this->compressImage($photo);
@@ -85,52 +82,10 @@ class PostService
     }
 
 
-    public function updatePost($id, $data)
+    public function updatePost($id,  $data)
     {
 
         $post=$this->postRepository->update($id,$data->only('description','category_id','status'));
-            if ($data->hasFile('photos')) {
-                foreach ($data['photos'] as $photo) {
-
-                    $compressedPhoto = $this->compressImage($photo);
-                    $filename = time() . '_' . $photo->getClientOriginalName();
-                    Storage::putFileAs('public/photos', $compressedPhoto, $filename);
-
-                    $mediaData=[
-                        'URL'=>$filename,
-                        'mediable_type'=>Post::class,
-                        'mediable_id'=>$post->id,
-                        'type'=>'post_image'
-                    ];
-                    $this->mediaRepository->create($mediaData);
-
-                }
-        }
-
-        if ($data->hasFile('videos')) {
-            foreach ($data['videos'] as $video) {
-
-                $compressedVideo = $this->compressVideo($video);
-                $filename = time() . '_' . $video->getClientOriginalName();
-                Storage::putFileAs('public/videos', $compressedVideo, $filename);
-
-                $mediaData=[
-                    'URL'=>$filename,
-                    'mediable_type'=>Post::class,
-                    'mediable_id'=>$post->id,
-                    'type'=>'post_video'
-                ];
-                $this->mediaRepository->create($mediaData);
-
-            }
-        }
-        return $post;
-    }
-
-    public function updatePost2($id, $data)
-    {
-
-        $post=$this->postRepository->update2($id,$data->all());
             if ($data->hasFile('photos')) {
                 foreach ($data['photos'] as $photo) {
 
@@ -210,11 +165,6 @@ class PostService
     public function index()
     {
         return $this->postRepository->index();
-    }
-
-    public function getPost($id)
-    {
-        return $this->postRepository->getPost($id);
     }
 
 }

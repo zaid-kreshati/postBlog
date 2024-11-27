@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.1",
         "api-video/php-api-client": "^1.4",
-        "consoletvs/charts": "^6.7",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^2",
         "laravel/framework": "^10.10",

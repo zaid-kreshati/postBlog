@@ -1,100 +1,43 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\AuthController;
-use App\Http\Controllers\api\HomeController;
-use App\Http\Controllers\api\ProfileController;
+use App\Http\Controllers\api\AuthController_api;
+use App\Http\Middleware\ValidateToken;
 use App\Http\Controllers\api\PostController;
-use App\Http\Middleware\TwoFactor;
-use App\Http\Controllers\api\AdminController;
-use App\Http\Controllers\api\TwoAuthController;
-use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\api\CommentController;
-use App\Http\Controllers\api\SearchController;
-use GuzzleHttp\Middleware;
+
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
+| Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| be assigned to the "api" middleware group. Make something great!
 |
 */
 
-
-// Auth Routes
-Route::controller(AuthController::class)->group(function () {
-    Route::post('/login', 'login')->name('login');
-    Route::post('/logout', 'logout')->name('logout')->middleware('auth:api');
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
 
-// Two Factor Routes
-Route::controller(TwoAuthController::class)->prefix('two-factor')->name('verify.two.factor.')->group(function () {
-    Route::post('/admin/register', 'initiateRegistration');
-    Route::get('/resend_code', 'resendTwoFactorCode');
-    Route::post('/register/verify', 'verifyRegistration');
-});
+// Auth routes
+Route::controller(AuthController_api::class)->group(function () {
+    Route::post('/login', 'login')->name('api.login');
+    Route::post('/register/user', 'register_user')->name('api.register.user');
+    Route::post('/register/admin', 'register_admin')->name('api.register.admin');
 
 
-
-// Home Route
-Route::get('/home', [HomeController::class, 'index'])->middleware('auth:api');
-
-// Profile Routes
-Route::controller(ProfileController::class)->middleware('auth:api')->prefix('profile')->group(function () {
-    Route::get('/{id?}', 'index');
-    Route::post('/upload-profile-image', 'upload_profile_image');
-    Route::post('/upload-background-image', 'upload_background_image');
-    Route::post('/description/add', 'addDescription');
-    Route::put('/description/update/{id}', 'updateDescription');
-    Route::delete('/description/delete/{id}', 'deleteDescription');
-    Route::delete('/remove-profile-image', 'removeProfileImage');
-    Route::delete('/remove-cover-image', 'removeCoverImage');
-    Route::post('/switch-privacy', 'switchPrivacy');
-});
-
-// Post Routes
-Route::controller(PostController::class)->middleware('auth:api')->prefix('posts')->group(function () {
-    Route::post('/store', 'store');
-    Route::post('/update/{id}', 'update');
-    Route::patch('/archive/{id}', 'archive');
-    Route::post('/filter', 'filterPosts');
-    Route::delete('/media/delete/{id}', 'deleteMedia');
-    Route::delete('/delete/{id}', 'deletePost');
-    Route::post('/publish/{id}', 'publishPost');
-    Route::post('/load-more', 'loadMorePosts');
+    Route::post('/logout', 'logout')->middleware(ValidateToken::class,'auth:api')->name('api.logout');
 });
 
 
-// Category Routes
-Route::controller(CategoryController::class)->prefix('admin/categories')->middleware('auth:api','checkAdmin')->group(function () {
-    Route::get('/index', 'index');
-    Route::post('/store', 'store');
-    Route::post('update/{id}', 'update');
-    Route::delete('destroy/{id}', 'destroy');
-    Route::get('nested/{id}', 'getNestedCategories');
-    Route::post('search', 'search');
-});
+Route::post('/post/store', [PostController::class, 'store'])->middleware('auth:api');
+Route::post('/post/update/{id}', [PostController::class, 'update'])->middleware('auth:api');
+Route::delete('/post/destory/{id}', [PostController::class, 'destroy'])->middleware('auth:api');
 
 
-// Comment Routes
-Route::controller(CommentController::class)->middleware('auth:api')->prefix('comment')->group(function () {
-    Route::post('/store', 'store');
-    Route::get('commentsOnPost/{postId}', 'index');
-    Route::delete('destroy/{id}', 'destroy');
-    Route::post('storeNested', 'storeNested');
-    Route::get('getNested/{parentId}', 'getNestedComments');
-});
 
-// Search Routes
-Route::controller(SearchController::class)->prefix('search')->middleware('auth:api')->group(function () {
-    Route::get('/all', 'searchAll');
-    Route::get('/posts-with-photo', 'searchPostswithphoto');
-    Route::get('/posts-with-video', 'searchPostswithvideo');
-    Route::get('/posts', 'searchAllPosts');
-    Route::get('/users', 'searchUsers');
-    Route::post('/load-more', 'loadMoreResults');
-});
+
+
