@@ -7,6 +7,7 @@ use App\Services\PostService;
 use App\Models\Category;
 use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 class HomeController extends Controller
 {
     protected $postService;
@@ -24,6 +25,11 @@ class HomeController extends Controller
         $user_id=Auth::id();
 
         return view('home', compact('post_list', 'home', 'status', 'user_id'));
+    }
+
+    public function search(){
+        $categories=Category::all();
+        return view('search', compact('categories'));
     }
 
 }

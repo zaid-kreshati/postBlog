@@ -56,7 +56,11 @@
             </form>
 
             @if (session('error'))
-                <div class="alert alert-danger mt-3">{{ session('error') }}</div>
+                Swal.fire({
+                    title: "Error",
+                    text: session('error'),
+                    icon: "error"
+                });
             @endif
         </div>
     </div>

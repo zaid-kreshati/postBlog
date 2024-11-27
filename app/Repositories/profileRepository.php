@@ -15,17 +15,15 @@ class ProfileRepository
         return Description::where('user_id', $userID)->get();
     }
 
-    public function getProfileImage()
+    public function getProfileImage($owner_id)
     {
-        $userID=Auth::id();
-        $profile_image=Media::where('mediable_id', $userID)->where('type','user_profile_image')->first();
+        $profile_image=Media::where('mediable_id', $owner_id)->where('type','user_profile_image')->first();
         return $profile_image;
     }
 
-    public function getCoverImage()
+    public function getCoverImage($owner_id)
     {
-        $userID=Auth::id();
-        $cover_image=Media::where('mediable_id', $userID)->where('mediable_type',User::class)->where('type','user_cover_image')->first();
+        $cover_image=Media::where('mediable_id', $owner_id)->where('mediable_type',User::class)->where('type','user_cover_image')->first();
         return $cover_image;
     }
 
@@ -58,17 +56,40 @@ class ProfileRepository
 
     public function updateDescription($request, $id)
     {
-        return Description::find($id)->update($request->all());
+        $description=Description::find($id)->update($request->all());
+        return $description;
     }
 
     public function deleteDescription($id)
     {
-        return Description::find($id)->delete();
+        $description = Description::find($id);
+        if (!$description) {
+            throw new \Exception('Description not found.');
+        }
+        return $description->delete();
     }
 
     public function saveDescriptions($request)
     {
         return Description::where('user_id', Auth::id())->update(['text' => $request->text]);
+    }
+
+    public function checkIfImageExists($image_name)
+    {
+        return Media::where('mediable_id', Auth::id())->where('type', $image_name)->first();
+    }
+
+    public function switchPrivacy($status)
+    {
+        if($status==1&&Auth::user()->is_private==1){
+            throw new \Exception('You cannot turn on privacy when it is already on.');
+        }
+        else if($status==0&&Auth::user()->is_private==0){
+            throw new \Exception('You cannot turn off privacy when it is already off.');
+        }
+        else{
+            return User::find(Auth::id())->update(['is_private' => $status]);
+        }
     }
 
 }

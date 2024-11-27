@@ -38,7 +38,8 @@ class CategoryService
 
     public function updateCategory($request, $id)
     {
-        return $this->categoryRepository->updateCategory($request, $id);
+         $category=$this->categoryRepository->updateCategory($request, $id);
+         return $category;
     }
 
     public function deleteCategory($id)

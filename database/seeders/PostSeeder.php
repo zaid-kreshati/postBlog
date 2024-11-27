@@ -18,7 +18,7 @@ class PostSeeder extends Seeder
     public function run(): void
     {
         $category = Category::first();
-        $users = User::take(2)->get();
+        $users = User::take(6)->get();
 
         foreach ($users as $user) {
             // Create published posts

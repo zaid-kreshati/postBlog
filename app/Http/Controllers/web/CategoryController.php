@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
-use App\Http\Controllers\web\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\CategoryService;
 use App\Traits\JsonResponseTrait;
@@ -61,6 +61,7 @@ class CategoryController extends Controller
     }
     public function index()
     {
+        Log::info('index');
         $categories = Category::whereNull('parent_id')
             ->with('children')
             ->get()
@@ -72,17 +73,15 @@ class CategoryController extends Controller
                 ];
             });
 
-        return $categories; // Return the collection directly, not wrapped in 'data'
+        return $this->successResponse($categories, __('Categories fetched successfully')); // Return the collection directly, not wrapped in 'data'
     }
 
-    public function getChildren($parentId)
+    public function getNestedCategories($parentId)
     {
+        Log::info($parentId);
         $children=$this->categoryService->getChildren($parentId);
-        Log::info('getChildren');
-        Log::info($children);
 
-
-        return $children; // Return the collection directly, not wrapped in 'data'
+        return $this->successResponse($children, __('Categories fetched successfully'));
     }
 
 

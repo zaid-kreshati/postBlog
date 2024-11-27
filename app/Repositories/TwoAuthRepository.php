@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\TwoFactorCodeMail;
 use App\Models\User;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Log;
 class TwoAuthRepository
 {
     public function create(array $data)
     {
+        Log::info('data');
+        Log::info($data);
         Cache::put('registration',$data, now()->addMinutes(10));
         Mail::to($data['email'])->send(new TwoFactorCodeMail($data['verification_code']));
         return ;
@@ -22,7 +24,7 @@ class TwoAuthRepository
 
         $registrationData = Cache::get('registration');
         if (!$registrationData) {
-            $response['error']='Registration failed. Please try again.';
+            $response['error']='Registration failed,there is no registration data. please try again.';
             $response['status']=false;
             return $response;
         }

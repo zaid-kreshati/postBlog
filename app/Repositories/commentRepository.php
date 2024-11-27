@@ -11,7 +11,7 @@ class CommentRepository
 {
     public function getPostComments($postId)
     {
-        $comments = Comment::where('post_id', $postId)->where('parent_id', null)->with('post')->get();
+        $comments = Comment::where('post_id', $postId)->where('parent_id', null)->with('post', 'nestedComments')->get();
         Log::info("comment10");
         Log::info($comments);
         return $comments;
