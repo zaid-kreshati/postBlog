@@ -4,11 +4,12 @@ namespace App\Services;
 
 use App\Repositories\AuthRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Traits\JsonResponseTrait;
 
 class AuthService
 {
+    use JsonResponseTrait;
     protected $AuthRepository;
 
     public function __construct(AuthRepository $AuthRepository)
@@ -20,35 +21,19 @@ class AuthService
     {
         Log::info($data);
         // Hash the password before saving
-        $data['password'] = Hash::make($data['password']);
-
-
-           // Upload photo and store path
-           $photoPath = null;
-           if (isset($data['photo']) && $data['photo']->isValid()) {
-               $photoPath = $data['photo']->store('photos', 'public'); // Store in the 'public/photos' directory
-           }
+        $data['password'] = ($data['password']);
 
            // Call repository to create post
            $user= $this->AuthRepository->create([
                'name' => $data['name'],
                'email' => $data['email'],
                'password' => $data['password'],
-               'photo_path' => $photoPath, // Store the path here
                'role' => $data['role'],
            ]);
 
-
-
-        // Generate a token for the user
-        $token = $user->createToken('MyApp')->accessToken;
-
+           Auth::login($user);
         // Return the user and token information
-        return [
-            'status' => 'success',
-            'user' => $user,
-            'access_token' => $token,
-        ];
+        return $this->successResponse('Registration successful!');
     }
 
     public function login(array $credentials)
@@ -61,32 +46,26 @@ class AuthService
             // Generate a new token for the authenticated user
             $token = $user->createToken('MyApp')->accessToken;
             $role=$user->roles->first()->name;
-
-
-            // Return the user and token information
-            return [
+            $response=[
                 'status' => 'success',
                 'user' => $user,
                 'access_token' => $token,
+                'role' => $role,
             ];
+
         } else {
-            // Return an error response if authentication fails
-            return [
+            $response=[
                 'status' => 'error',
                 'message' => 'Invalid credentials.',
             ];
         }
+        return $response;
     }
 
     public function logout()
     {
         Auth::user()->tokens()->delete();
-        return [
-            'status' => 'success',
-            'message' => 'Logged out successfully.',
-        ];
+        return $this->successResponse('Logged out successfully.');
     }
-
-
 
 }

@@ -1,6 +1,6 @@
 <!-- Edit Post Modal -->
 
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" style="max-width: 600px;" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
@@ -44,7 +44,7 @@
                     <!-- Current Media Preview -->
                     <div id="current-media" class="form-group mb-3">
                         <label>Current Media</label>
-                        <div id="mediaCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div id="mediaCarousel" class="carousel slide" data-bs-ride="false">
                             <div class="carousel-inner">
                                 <!-- Carousel items will be dynamically inserted here -->
                             </div>
@@ -60,6 +60,10 @@
                             </button>
                         </div>
                     </div>
+
+                    <span class="btn4 delete-media-btn" id="delete-media" data-media-id="${item.id}">
+                        <i class="fas fa-trash"></i>
+                    </span>
 
                     <div class="form-group mb-3">
                         <label for="edit-photos">Upload New Photos</label>
@@ -77,12 +81,14 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-post" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn-post" id="saveChangesBtn">Save changes</button>
+                <button type="button" class="btn4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn4" id="saveChangesBtn">Save changes</button>
             </div>
         </div>
     </div>
 </div>
+
+
 
 <script>
     function loadCategories(parentId = null) {
@@ -151,6 +157,8 @@
 
     $(document).on('click', '#backButton', function() {
         loadCategories(null);
+        $('#delete-media-btn').hide();
+
     });
 
     $('#selectCategory').click(function() {
@@ -173,6 +181,8 @@
     $('#categoryModal').on('hidden.bs.modal', function() {
         $('#categoryListEdit').html('');
         $('#categoryButton').removeClass('btn-success').addClass('btn-primary');
+        $('.delete-media-btn').hide();
+
         // Remove modal backdrop and restore body state
         $('.modal-backdrop').remove();
         $('body').removeClass('modal-open').css('overflow', '');
@@ -219,15 +229,21 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        console.log(response.data.html);
+                        console.log(response.data.haveMedia);
                         $('#post-list').html(response.data.html);
 
                         // Close modal and show success message
                         $('#editPostModal').modal('hide');
+                        $('#delete-media').hide();
                         Swal.fire({
                             title: "Post updated successfully!",
                             icon: "success"
                         });
+
+                        if(!response.data.haveMedia){
+                            $('.delete-media-btn').hide();
+                        }
+                        else $('.delete-media-btn').show();
 
                         // Remove modal backdrop manually
                         $('.modal-backdrop').remove();
@@ -329,12 +345,7 @@
                         }
 
                         slideHtml += `
-                        <button type="button"
-                                class="btn btn-danger delete-media-btn position-absolute"
-                                data-media-id="${item.id}"
-                                style="top: 10px; right: 50px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
+
                     </div>
                 </div>`;
 

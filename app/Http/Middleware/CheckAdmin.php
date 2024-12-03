@@ -13,7 +13,7 @@ class CheckAdmin
     public function handle($request, Closure $next)
     {
         // Use 'api' guard for Passport (or change to your custom guard if needed)
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('web')->user();
 
         if ($user && $user->hasRole('admin')) {
             return $next($request);

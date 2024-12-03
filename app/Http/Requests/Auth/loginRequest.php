@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Exceptions\ValidationFailedException;
 use Illuminate\Contracts\Validation\Validator;
+use App\Exceptions\PostBlogException;
 
 class loginRequest extends FormRequest
 {
@@ -28,9 +28,20 @@ class loginRequest extends FormRequest
             'password' => 'required|string|min:8',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'The email field is required.',
+            'password.required' => 'The password field is required.',
+        ];
+    }
+
+
     protected function failedValidation(Validator $validator)
     {
-        throw new ValidationFailedException($validator);
+        $errorMessage = $validator->errors()->first();
+        throw new PostBlogException($validator, $errorMessage);
     }
 
 }

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Category;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use App\Traits\ChecksModelExistence;
 
 class CategoryRepository
@@ -12,7 +13,7 @@ class CategoryRepository
 
     public function getParentNullCategories()
     {
-        return Category::whereNull('parent_id')->orderBy('id', 'desc')->paginate(5);
+        return Category::whereNull('parent_id')->orderBy('id', 'desc')->paginate(7);
 
     }
 
@@ -22,18 +23,24 @@ class CategoryRepository
 
     }
 
-    public function getCategoriesByParent($parent_id)
+    public function getCategoriesByParent($parentId)
     {
-        return Category::where('parent_id', $parent_id)->orderBy('id', 'desc')->paginate(5);
+        if($parentId==0){
+            return Category::whereNull('parent_id')->orderBy('id', 'desc')->paginate(7);
+        }
+        else{
+            return Category::where('parent_id', $parentId)->orderBy('id', 'desc')->paginate(7);
+        }
 
     }
 
     public function createCategory(array $request)
     {
-        if(isset($request['id']) && is_null($request['id']))
+        if($request['id']==0){
           $Category=Category::create([
             'name' => $request['name'],
         ]);
+        }
         else{
 
         $Category=Category::create([
@@ -51,22 +58,14 @@ class CategoryRepository
 
     public function updateCategory($request, $id)
     {
-        if(isset($request['id']) && is_null($request['id']))
-        {
-         $category = Category::find($id);
-         $category->update([
-            'name' => $request['name'],
-         ]);
-        }
-         else{
-            $category = Category::find($id);
-            $category->update([
-                'name' => $request['name'],
-                'parent_id' => $request['id'],
-            ]);
-         }
+        Log::info($request);
+        Log::info("idd");
+        Log::info($id);
 
-         Log::info($category);
+        $category = Category::find($id);
+
+
+
          return $category;
     }
 
@@ -77,7 +76,7 @@ class CategoryRepository
 
     public function searchCategories($search)
     {
-        return Category::where('name', 'like', '%' . $search . '%')->orderBy('id','desc')->paginate(5);
+        return Category::where('name', 'like', '%' . $search . '%')->orderBy('id','desc')->paginate(7);
     }
 
     public function getCategoriesByParentHtml($id)
@@ -88,12 +87,12 @@ class CategoryRepository
     public function getChildren($parentId)
     {
         if($parentId==0){
-        return Category::whereNull('parent_id')->orderBy('id', 'desc')->get();
+        return Category::whereNull('parent_id')->orderBy('id', 'desc')->paginate(7);
         }
         else{
             $categoryCheck = $this->checkModelExists(Category::class, $parentId);
             if($categoryCheck)
-        return Category::where('parent_id', $parentId)->orderBy('id', 'desc')->get();
+        return Category::where('parent_id', $parentId)->orderBy('id', 'desc')->paginate(7);
         else
         return null;
         }

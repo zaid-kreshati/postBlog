@@ -11,8 +11,7 @@
     <div class="main-content">
         <h1>{{ __('Home') }}</h1>
         <div class="btn-group">
-            <a href="{{ route('categories.index') }}" class="btn-post">{{ __('View All Categories') }}</a>
-
+            <a href="{{ route('DashBoard.home') }}" class="btn-post">{{ __('Analytics') }}</a>
 
 
         </div>

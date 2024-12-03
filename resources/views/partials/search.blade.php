@@ -91,7 +91,7 @@
                         @endif
                     </div>
                     <div class="button-group text-end">
-                        <button id="toggleCommentForm" class="btn-post" data-id="{{ $post->id }}">
+                        <button id="toggleCommentForm" class="btn4" data-id="{{ $post->id }}">
                             Comment
                         </button>
                     </div>

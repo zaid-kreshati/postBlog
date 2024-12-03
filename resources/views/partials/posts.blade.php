@@ -32,17 +32,19 @@
                 style="    position: relative;
                     align-content: center;
                     left: -22.8px;
-                    width: 105.7%;">
+                    width: 106.9%;">
                 @foreach ($post->tag as $tag)
                     @if ($tag->user_id == $post->owner_id)
-                        <div class="d-flex align-items-center" data-user-id="{{ $tag->user_id }}" style="cursor: pointer;">
-                            <!-- Profile Image -->
-                            @if ($tag->user->media->isNotEmpty())
-                                @foreach ($tag->user->media as $media)
+                        <!-- Profile Image -->
+                        @if ($tag->user->media->isNotEmpty())
+                            @foreach ($tag->user->media as $media)
                                     @if ($media->type == 'user_profile_image')
                                         <img src="{{ asset('storage/photos/' . $media->URL) }}" alt="Profile photo"
                                             class="img-fluid rounded-circle"
-                                            style="width: 90px; height: 90px; object-fit: fill; margin-right: 20px;">
+                                            data-user-id="{{ $tag->user_id }}"
+                                            style="width: 90px; height: 90px; object-fit: fill;
+                                            top: 10px; left: 20px; position: absolute;
+                                            cursor: pointer;">
                                     @endif
                                 @endforeach
                             @else
@@ -51,12 +53,15 @@
                                     style="width: 90px; height: 90px; object-fit: fill; margin-right: 20px;">
                             @endif
 
-                            <div style="font-size: 35px;">
+
+
+                            <div style="font-size: 35px; left: 115px; position: absolute;">
                                 {{ $tag->user->name }}
+
                             </div>
-                        </div>
                     @endif
                 @endforeach
+                <div style="margin-bottom: 115px;"></div>
 
 
                 <!-- Post Description -->
@@ -64,6 +69,18 @@
                     <h2 style="margin: 0; text-align: left; padding-left: 10px;">{{ $post->description }}
                     </h2>
                 </div>
+
+
+
+
+
+                <img src="{{ asset('PostBlug/three-dots-icon.png') }}"
+                alt="More" class="icon5 dropdown-toggle"
+                    id="dropdownMenuButton"
+                    style="position: absolute; right: 10px; top: 10px; cursor: pointer;"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+
 
                 <!-- Post Media -->
                 @if ($post->media->isNotEmpty())
@@ -132,61 +149,23 @@
 
 
                 <hr>
-                <div class="button-group">
-                    @if (!$home && $is_owner)
-                        @if ($post->owner_id == $user_id)
-                            @if ($post->status == 'published')
-                                <!-- Edit Button -->
-                                <button class="btn-post edit-post-btn" data-id="{{ $post->id }}"
-                                    data-description="{{ $post->description }}"
-                                    data-category="{{ $post->category_id }}" data-media='@json($post->media)'
-                                    data-toggle="modal" data-target="#editPostModal">
-                                    Edit Post
-                                </button>
-                                <!-- Archive Button -->
-                                <button class="btn-post archive-post-btn" data-id="{{ $post->id }}">
-                                    Archive Post
-                                </button>
-                            @elseif($post->status == 'draft')
-                                <!-- Edit Button -->
-                                <button class="btn-post edit-post-btn" data-id="{{ $post->id }}"
-                                    data-description="{{ $post->description }}"
-                                    data-category="{{ $post->category_id }}" data-media='@json($post->media)'
-                                    data-toggle="modal" data-target="#editPostModal">
-                                    Edit Post
-                                </button>
-
-
-                                <!-- Publish Button -->
-                                <button class="btn-post publish-post-btn" data-id="{{ $post->id }}"
-                                    data-description="{{ $post->description }}"
-                                    data-category="{{ $post->category_id }}" data-media='@json($post->media)'
-                                    data-toggle="modal" data-target="#editPostModal">
-                                    Publish Post
-                                </button>
-                                <!-- Delete Button -->
-                                <button class="btn-post delete-post-btn" data-id="{{ $post->id }}">
-                                    Delete Post
-                                </button>
-                            @elseif($post->status == 'archived')
-                                <!-- Delete Button -->
-                                <button class="btn-post delete-post-btn" data-id="{{ $post->id }}">
-                                    Delete Post
-                                </button>
-                            @endif
-                        @endif
-                    @endif
+                <div style="margin-top: 50px;"></div>
+                @include('partials.edit-post-status')
 
                     <!-- Comment Button -->
-                    <button id="toggleCommentForm" class="btn-post " data-id="{{ $post->id }}">
-                        Comment
-                    </button>
-                    @include('partials.comment')
+                    <label  class="comment-label"  >{{"comment"}}</label>
+                    <img src="{{ asset('PostBlug/comment-icon.png') }}"id="toggleCommentForm"
+                    for="toggleCommentForm" data-id="{{ $post->id }}"
+                     alt="Comment" class="icon4" style="right: 20px; bottom: 10px; position: absolute;" >
+
+
 
                     {{-- <div class="commentFormContainer" id="commentForm-{{ $post->id }}">
                                 @include('partials.comment', ['post' => $post])
                             </div> --}}
                 </div>
+                @include('partials.comment')
+
 
 
 
@@ -212,6 +191,8 @@
         var postId = $(this).data('id');
 
     });
+
+
 
 
 
@@ -251,13 +232,15 @@
                                             `<img src="{{ asset('storage/photos/') }}/${response.data.personal_image.URL}"
                                                  alt="Profile photo"
                                                  class="img-fluid rounded-circle"
-                                                 style="width: 50px; height: 50px; object-fit: fill; margin-right: 750px;">` :
+                                                  style="width: 60px; height: 60px; object-fit: fill;
+                                                  margin-right: 760px;">` :
                                             `<img src="{{ asset('/PostBlug/default-profile.png') }}"
                                                  alt="Profile photo"
                                                  class="img-fluid rounded-circle"
-                                                 style="width: 50px; height: 50px; object-fit: fill; margin-right: 750px;">`
+                                                 style="width: 60px; height: 60px; object-fit: fill;
+                                                 margin-right: 760px;">`
                                         }
-                                        <div style="right: 750px; font-size: 15px; margin-top: -40px; position: relative;">
+                                        <div style="right: 750px; font-size: 25px; margin-top: -40px; position: relative;">
                                             ${response.data.name}
                                         </div>
                                     </div>

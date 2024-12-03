@@ -52,13 +52,16 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="backgroundPhotoModalLabel">Edit Cover Image</h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                 </div>
                 <form id="backgroundPhotoForm" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <input type="file" name="cover_image" id="backgroundPhotoInput" style="display: none;" accept="image/*">
-                    <label for="backgroundPhotoInput" class="btn-post" style="cursor: pointer;">Upload New Image</label>
-                    <button type="button" class="btn-post" id="removeCoverImage">Remove Image</button>
+                    <label for="backgroundPhotoInput" class="btn4" style="cursor: pointer;">Upload New Image</label>
+                    <button type="button" class="btn4" id="removeCoverImage">Remove Image</button>
                 </form>
             </div>
         </div>
@@ -69,15 +72,18 @@
     <div class="modal fade" id="profilePhotoModal" role="dialog" tabindex="-1" aria-labelledby="profilePhotoModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background-color: #f8f9fa;">
                     <h5 class="modal-title" id="profilePhotoModalLabel">Edit Profile Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                 </div>
+
                 <form id="profilePhotoForm" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <input type="file" name="profile_image" id="profilePhotoInput" style="display: none;  " accept="image/*">
-                    <label for="profilePhotoInput" class="btn-post" style="cursor: pointer;">Upload New Image</label>
-                    <button type="button" class="btn-post" id="removeProfileImage">Remove Image</button>
+                    <label for="profilePhotoInput" class="btn4" style="cursor: pointer;">Upload New Image</label>
+                    <button type="button" class="btn4" id="removeProfileImage">Remove Image</button>
                 </form>
             </div>
         </div>

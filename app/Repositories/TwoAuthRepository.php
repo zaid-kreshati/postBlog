@@ -22,12 +22,14 @@ class TwoAuthRepository
     public function getRegistrationData($two_factor_code)
     {
 
+
         $registrationData = Cache::get('registration');
         if (!$registrationData) {
             $response['error']='Registration failed,there is no registration data. please try again.';
             $response['status']=false;
             return $response;
         }
+  
 
         if ($two_factor_code !== $registrationData['verification_code']) {
             $response['error']='Invalid verification code.';

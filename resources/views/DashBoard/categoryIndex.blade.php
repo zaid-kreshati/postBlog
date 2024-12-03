@@ -6,184 +6,224 @@
 
     <body>
         @csrf
-
-        <div class="category-container">
-        <!-- Create New Category Button and Form -->
-
-            <div id="createCategoryForm" >
-                @if (session('success'))
-                <div class="alert alert-success">{{ __('category_created_successfully') }}</div>
-                @endif
-
-                <form id="CategoryCreate" action="{{ route('categories.store') }}" method="POST">
-                    @csrf
-                    <div class="category">
-                        <label for="name">{{ __('Create New Category') }}:</label>
-                        <input type="text" id="name" name="name" class="category_name" value="{{ old('name') }}">
-                    </div>
-
-                    <td>
-                        <input type="hidden" name="id" id="id" value="{{ $id }}">
-                    </td>
-
-
-
-
-                    @error('name')
-                        <div class="alert alert-danger mt-2">{{ __('error_name') }}: {{ $message }}</div>
-                    @enderror
-                </form>
-            </div>
-
         <!-- Search Input Field -->
         <div class="search-container">
             <input type="text" id="searchBox" placeholder="{{ __('search_categories') }}" autocomplete="off">
             <img src="{{ asset('PostBlug/searchIcon.png') }}" alt="{{ __('search_icon_alt') }}">
         </div>
 
-        <!-- Horizontal Schedule Container -->
-        <div class="table-container">
-            <h1 style="text-align: center;">{{ __('categories_view') }}</h1>
+        <div class="category-container">
+            <!-- Button to Open Create Category Modal -->
+            <button id="openCreateCategoryModal" class="btn4">{{ __('Create New Category') }}</button>
 
-            @include('DashBoard.partials.categoryIndex', ['categories' => $categories])
-        </div>
+            <!-- Horizontal Schedule Container -->
+            <div class="table-container">
+                @include('DashBoard.partials.categoryIndex', ['categories' => $categories])
+            </div>
+            <input type="hidden" id="parent_id" data-parent-id="{{ $id }}"  value="{{ $id }}">
 
-         <!-- Pagination -->
-    <div class="d-flex justify-content-center">
-        <div id="pagination-links">
-            {{ $categories->links('pagination::bootstrap-5') }}
-        </div>
+ <!-- Pagination -->
+ <div class="d-flex justify-content-center">
+    <div id="pagination-link">
+        {{ $categories->links('pagination::bootstrap-5') }}
     </div>
+</div>
+
+
+
+
+        </div>
+
+        <!-- Create Category Modal -->
+        <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createCategoryModalLabel">Create Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createCategoryForm">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="createCategoryName" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="createCategoryName" name="name">
+                            </div>
+                            <input type="hidden" name="id" id="id" value="{{ $id }}">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Category Modal -->
+        <div class="modal fade" id="updateCategoryModal" tabindex="-1" aria-labelledby="updateCategoryModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateCategoryModalLabel">Update Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateCategoryForm">
+                            @csrf
+                            @method('POST')
+                            <input type="hidden" id="updateCategoryId" name="id" value="{{ $id }}">
+                            <div class="mb-3">
+                                <label for="updateCategoryName" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="updateCategoryName" name="name">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
 
 
     </body>
-</div>
+
+
+
 
 
     <script>
-        $(function() {
+        $(document).ready(function () {
+            // CSRF setup
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
-       // Ensure CSRF token is sent with every AJAX request
-       $.ajaxSetup({
-           headers: {
-               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-           }
-       });
+            // Open Create Modal
+            $('#openCreateCategoryModal').click(function () {
+                $('#createCategoryModal').modal('show');
+            });
 
+            // Handle Create Category
+            $('#createCategoryForm').submit(function (e) {
+                e.preventDefault();
+                const categoryName = $('#createCategoryName').val();
+                const id = $('#id').val();
 
-       // Handle Category Creation via AJAX
-       $('#CategoryCreate').submit(function(e) {
-           e.preventDefault(); // Prevent form submission
+                $.ajax({
+                    url: '{{ route('categories.store') }}',
+                    method: 'POST',
+                    data: {
+                        name: categoryName,
+                        id:id
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            console.log(response.data);
+                            Swal.fire({
+                                title: '{{ __('category_created_successfully') }}',
+                                icon: 'success'
+                            });
+                            $('#category-index').html(response.data.html);
+                            $('#pagination-link').html(response.data.pagination);
+                            $('#createCategoryName').val('');
+                            $('#createCategoryModal').modal('hide');
+                        } else {
+                            Swal.fire({
+                                title: '{{ __('failed_to_create_category') }}',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            title: '{{ __('error_occurred') }}',
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
 
-           let categoryName = $('#name').val();
-           let id=$('#id').val();
-
-           $.ajax({
-               url: '{{ route('categories.store') }}',
-               type: 'POST',
-               data: {
-                   name: categoryName,
-                   id:id,
-                   _token: '{{ csrf_token() }}' // CSRF token for security
-               },
-               success: function(response) {
-                   if (response.success) {
-                       alert('{{ __('category_created_successfully') }}');
-
-                       console.log(response.data);
-                       $('#category-index').html(response.data);
-
-
-                       $('#name').val('');
-                   } else {
-                       alert('{{ __('failed_to_create_category') }}');
-                   }
-               },
-               error: function(xhr) {
-                   if (xhr.status === 422) {
-                       const errors = xhr.responseJSON.errors;
-                       if (errors.name_en) {
-                           alert('English Name Error: ' + errors.name_en.join(', '));
-                       }
-                       if (errors.name_ar) {
-                           alert('Arabic Name Error: ' + errors.name_ar.join(', '));
-                       }
-                       if (errors.color) {
-                           alert('{{ __('error_color') }}: ' + errors.color.join(', '));
-                       }
-                   } else {
-                       alert('{{ __('error_occurred') }}');
-                   }
-               }
-           });
-       });
-
-       // Handle Category Update via AJAX
-       function updateCategory(categoryId, categoryName) {
-           $.ajax({
-               url: '{{ route('categories.update', ':id') }}'.replace(':id', categoryId),
-               type: 'PUT',
-               data: {
-                   name: categoryName,
-                   _token: '{{ csrf_token() }}' // CSRF token
-               },
-               success: function(response) {
-                   alert('{{ __('category_updated_successfully') }}');
-               },
-               error: function(xhr) {
-                   alert('An error occurred. Please try again.');
-               }
-           });
-       }
-
-       // Handle Category Deletion via AJAX
-       function deleteCategory(categoryId) {
-           if (confirm('{{ __('confirm_delete_category') }}')) {
-               $.ajax({
-                   url: '{{ route('categories.destroy', ':id') }}'.replace(':id', categoryId),
-                   type: 'DELETE',
-                   data: {
-                       _token: '{{ csrf_token() }}' // CSRF token
-                   },
-                   success: function(response) {
-                       if (response.success) {
-                           alert('{{ __('deleted_successfully') }}');
-                           $(`#category-${categoryId}`).remove(); // Remove category row
-                       } else {
-                           alert('{{ __('permission_denied') }}');
-                       }
-                   },
-                   error: function() {
-                       alert('{{ __('error_occurred') }}');
-                   }
-               });
-           }
-       }
-
-       // Update Category Button Click
-       $(document).on('click', '.update-category-button', function(e) {
-           e.preventDefault();
-           let categoryId = $(this).data('id');
-           let categoryRow = $(this).closest('tr');
-           let categoryName = categoryRow.find('input[name="name"]').val();
-           updateCategory(categoryId, categoryName);
-       });
-
-       // Delete Category Button Click
-       $(document).on('click', '.delete-category-button', function(e) {
-           e.preventDefault();
-           let categoryId = $(this).data('id');
-           deleteCategory(categoryId);
-       });
+            // Open Update Modal
+            $(document).on('click', '.update-category-button', function () {
+                const categoryId = $(this).data('id');
+                const categoryName = $(this).data('name');
 
 
 
-       // Handle Pagination Links Click
+                $('#updateCategoryId').val(categoryId);
+                $('#updateCategoryName').val(categoryName);
+                $('#updateCategoryModal').modal('show');
+            });
+
+            // Handle Update Category
+            $('#updateCategoryForm').submit(function (e) {
+                e.preventDefault();
+                const categoryId = $('#updateCategoryId').val();
+                const categoryName = $('#updateCategoryName').val();
+                $.ajax({
+                    url: '{{ route('categories.update', ':id') }}'.replace(':id', categoryId),
+                    method: 'POST',
+                    data: {name: categoryName},
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '{{ __('category_updated_successfully') }}',
+                                icon: 'success'
+                            });
+
+                            $('#category-name-'+categoryId).text(categoryName);
+                            $('#updateCategoryModal').modal('hide');
+                        } else {
+                            Swal.fire({
+                                title: '{{ __('failed_to_update_category') }}',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            title: '{{ __('error_occurred') }}',
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
+        });
+
+        $(document).on('click', '.delete-category-button', function(){
+            const categoryId = $(this).data('id');
+            console.log(categoryId);
+            $.ajax({
+                url: '{{ route('categories.destroy', ':id') }}'.replace(':id', categoryId),
+                method: 'DELETE',
+                success: function (response) {
+                    console.log(response);
+                    $('#category-'+categoryId).remove();
+                    $('#pagination-link').html(response.data.pagination);
+                    Swal.fire({
+                        title: '{{ __('category_deleted_successfully') }}',
+                        icon: 'success'
+                    });
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: '{{ __('error_occurred') }}',
+                        icon: 'error'
+                    });
+                }
+            });
+        });
+
+        // Handle Pagination Links Click
        $(document).on('click', '.pagination a', function(e) {
            e.preventDefault();
            const page = $(this).attr('href').split('page=')[1];
-           const parent_id = $(this).data('parent-id');
+           const parent_id = $('#parent_id').data('parent-id');
+           console.log(parent_id);
+           console.log(page);
 
 
            fetchCategory(parent_id, page);
@@ -225,7 +265,8 @@
                },
                success: function(response) {
                 console.log(response);
-                   $('#category-index').html(response.data);  // Only update the tbody
+                $('#pagination-link').html(response.data.pagination);
+                   $('#category-index').html(response.data.html);  // Only update the tbody
 
                },
                error: function() {
@@ -234,10 +275,6 @@
            });
        }
 
-       });
-
-       </script>
-
-
+    </script>
 
 @endsection

@@ -9,14 +9,14 @@
                 <div class="col-lg-8">
                     <form id="search-form" class="input-group mb-3 shadow-sm">
                         <input type="text" id="search-query" name="query" class="form-control" placeholder="Search for users or posts..." aria-label="Search" aria-describedby="search-button">
-                        <button class="btn btn-primary" type="button" id="search-button"><i class="fas fa-search"></i></button>
+                        <button class="btn4" type="button" id="search-button"><i class="fas fa-search"></i></button>
                     </form>
                     <div class="btn-group d-flex justify-content-center mb-4" role="group" aria-label="Search Filters" id="search-filters">
-                        <button type="button" class="btn btn-outline-primary search-filter-btn" data-filter="all">All</button>
-                        <button type="button" class="btn btn-outline-primary search-filter-btn" data-filter="users">Users</button>
-                        <button type="button" class="btn btn-outline-primary search-filter-btn" data-filter="posts">Posts</button>
-                        <button type="button" class="btn btn-outline-primary search-filter-btn" data-filter="posts_with_photo">Posts with Photo</button>
-                        <button type="button" class="btn btn-outline-primary search-filter-btn" data-filter="posts_with_video">Posts with Video</button>
+                        <button type="button" class="btn4 search-filter-btn" data-filter="all">All</button>
+                        <button type="button" class="btn4 search-filter-btn" data-filter="users">Users</button>
+                        <button type="button" class="btn4 search-filter-btn" data-filter="posts">Posts</button>
+                        <button type="button" class="btn4 search-filter-btn" data-filter="posts_with_photo">Posts with Photo</button>
+                        <button type="button" class="btn4 search-filter-btn" data-filter="posts_with_video">Posts with Video</button>
                     </div>
                    @include('partials.search',['users' => null, 'posts' => null])
                 </div>

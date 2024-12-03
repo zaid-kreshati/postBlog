@@ -1,13 +1,13 @@
 <!-- New Post Button -->
-<button id="toggleFormButton" class="btn-post" data-bs-toggle="modal" data-bs-target="#newPostModal">{{ __(' New Post') }}</button>
+<button id="toggleFormButton" class="btn4" data-bs-toggle="modal" data-bs-target="#newPostModal">{{ __(' New Post') }}</button>
 
 <!-- New Post Modal -->
 <div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="width: 70%; margin: 0 auto;">
-            <div class="modal-header  text-white" style="background-color: #000;">
+            <div class="modal-header">
                 <h5 class="modal-title" id="newPostModalLabel">Create New Post</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="postForm" action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
@@ -65,8 +65,8 @@
 
                         <!-- Submit Buttons -->
                         <div class="mt-4">
-                            <button type="submit" class="btn-post" name="status" id="status" value="published" data-status="published">Publish</button>
-                            <button type="submit" class="btn-post" name="status" value="draft" data-status="draft">Save as Draft</button>
+                            <button type="submit" class="btn4" name="status" id="status" value="published" data-status="published">Publish</button>
+                            <button type="submit" class="btn4" name="status" value="draft" data-status="draft">Save as Draft</button>
                         </div>
                     </div>
                 </form>

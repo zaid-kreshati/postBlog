@@ -22,7 +22,9 @@ class PostBlogException extends Exception
 
     public function render()
     {
-        return $this->errorResponse($this->message);
+        return redirect()->back()->with('error', $this->getMessage());
+
+        //return $this->errorResponse($this->message);
 
     }
 }

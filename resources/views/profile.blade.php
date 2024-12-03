@@ -10,7 +10,7 @@
 
 <body>
     <main>
-        <div class="container">
+        <div class="container" style="width: 80%;">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-9 col-xl-8 board shadow-lg rounded bg-light p-4 ">
 
@@ -50,9 +50,9 @@
                     <!-- Filter Buttons -->
                     @if ($is_owner)
                         <div class="filter-btn d-flex justify-content-around mt-3 mb-4 ">
-                            <button class="btn post-filter " data-status="published">Published</button>
-                            <button class="btn post-filter " data-status="draft">Draft</button>
-                            <button class="btn post-filter " data-status="archived">Archived</button>
+                            <button class="btn4 post-filter " data-status="published">Published</button>
+                            <button class="btn4 post-filter " data-status="draft">Draft</button>
+                            <button class="btn4 post-filter " data-status="archived">Archived</button>
                         </div>
                     @endif
 
@@ -80,6 +80,17 @@
     </main>
 
     <script>
+
+        $('#editPostModal').on('hidden.bs.modal', function () {
+            $('#mediaCarousel .carousel-inner').empty(); // Clear the carousel content
+
+    // Reset any other modal-specific state if needed
+    $('#editPostForm')[0].reset(); // Reset the form inside the modal
+    $('#selectedCategoryId').val('');
+        $('.category-item').removeClass('selected');
+    });
+
+
 
         $('#switch-on-btn').on('click', function() {
             $.ajax({
@@ -591,9 +602,8 @@
                 if (media && media.length > 0) {
                     media.forEach(function(item, index) {
                         var slideHtml = `
-                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                    <div class="carousel-item ${index === 0 ? 'active' : ''}" data-media-id="${item.id}">
                         <div class="position-relative">`;
-
                         if (item.type === 'post_image') {
                             slideHtml += `
                         <img src="{{ asset('storage/photos/') }}/${item.URL}"
@@ -608,14 +618,7 @@
                             Your browser does not support the video tag.
                         </video>`;
                         }
-
                         slideHtml += `
-                        <button type="button"
-                                class="btn btn-danger delete-media-btn position-absolute"
-                                data-media-id="${item.id}"
-                                style="top: 10px; right: 50px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </div>
                 </div>`;
 
@@ -631,6 +634,7 @@
                 } else {
                     // If no media, hide controls and show placeholder
                     $('.carousel-control-prev, .carousel-control-next').hide();
+                    $('.delete-media-btn').hide();
                     $('.carousel-inner').html('<div class="text-center p-3">No media available</div>');
                 }
 
@@ -794,6 +798,10 @@
                 $('#edit-videos').val('');
                 return false;
             }
+            if($('#mediaCarousel .carousel-item').length){
+                $('.delete-media-btn').show();
+
+            }
 
             $.ajax({
                 url: '/posts/' + postId + '/update',
@@ -806,13 +814,14 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        console.log(response.data.html);
+                        console.log(response.data.haveMedia);
                         $('#post-list').html(response.data.html);
 
                         // Close modal and show success message
                         $('#editPostModalTemplate').hide();
+                        $('#delete-media').hide();
                         Swal.fire({
-                            title: "Post updated successfully!",
+                            title: "Post updated successfully!2",
                             icon: "success"
                         });
 
@@ -849,8 +858,19 @@
         // Delete Media
         $(document).on('click', '.delete-media-btn', function(e) {
             e.preventDefault();
-            var mediaId = $(this).data('media-id');
+            // var mediaId = $(this).closest('.carousel-item').find('[data-media-id]').data('media-id');
+
             var editButton = $(this).closest('.board').find('.edit-post-btn');
+
+            var activeItem = $('.carousel-inner .carousel-item.active');
+            var mediaId = activeItem.data('media-id');
+
+    if (!mediaId) {
+        Swal.fire('Error!', 'No media selected for deletion.', 'error');
+                return;
+            }
+            console.log(mediaId);
+            // console.log(editButton);
 
             Swal.fire({
                 title: 'Are you sure?',
@@ -929,12 +949,7 @@
                 </video>`;
                     }
 
-                    slideHtml += `<button type="button"
-                    class="btn-post delete-media-btn position-absolute"
-                    data-media-id="${item.id}"
-                    style="top: 10px; right: 50px;">
-                <i class="fas fa-trash"></i>
-            </button>
+                    slideHtml += `
             </div>
             </div>`;
 
@@ -1048,6 +1063,7 @@
 
         $(document).on('click', '#backButton', function() {
             loadCategories(null);
+            $('.delete-media-btn').hide();
         });
 
         $('#selectCategory').click(function() {

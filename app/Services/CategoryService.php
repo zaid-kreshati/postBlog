@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 
 class CategoryService
@@ -26,9 +27,9 @@ class CategoryService
         return $this->categoryRepository->getParentNullCategorieswithoutpagination();
     }
 
-    public function getCategoriesByParent($parent_id)
+    public function getCategoriesByParent( $parentId)
     {
-        return $this->categoryRepository->getCategoriesByParent($parent_id);
+        return $this->categoryRepository->getCategoriesByParent($parentId);
     }
 
     public function createCategory(array $request)

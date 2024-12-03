@@ -2,7 +2,7 @@
 <div class="descriptions-section" id="descriptionsSection">
     <div class="description">
         @if ($is_owner)
-        <button id="descriptionButton"  type="button" class="btn-post" data-bs-toggle="modal" data-bs-target="#descriptionModal" style="cursor: pointer; margin-top: 45px; ">
+        <button id="descriptionButton"  type="button" class="btn4" data-bs-toggle="modal" data-bs-target="#descriptionModal" style="cursor: pointer; margin-top: 45px; ">
             Manage Descriptions
         </button>
         @endif
@@ -31,7 +31,7 @@
                     @csrf
                     <div class="input-group mb-3">
                         <input type="text" name="text" class="form-control" placeholder="Add new description">
-                        <button type="submit" class="btn-post">Add</button>
+                        <button type="submit" class="btn4">Add</button>
                     </div>
                 </form>
 
@@ -53,8 +53,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-post" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn-post" id="saveDescriptionChanges">Save Changes</button>
+                <button type="button" class="btn4" id="saveDescriptionChanges">Save Changes</button>
             </div>
         </div>
     </div>
@@ -120,8 +119,8 @@ $(document).on('click', '.btn-edit-description', function() {
     descriptionItem.html(`
         <div class="input-group">
             <input type="text" class="form-control edit-description-input" value="${currentText}">
-            <button class="btn btn-success btn-save-edit" data-id="${id}">Save</button>
-            <button class="btn btn-danger btn-cancel-edit">Cancel</button>
+            <button class="save-btn btn-save-edit" data-id="${id}">Save</button>
+            <button class="cancel-btn btn-cancel-edit">Cancel</button>
         </div>
     `);
 });
