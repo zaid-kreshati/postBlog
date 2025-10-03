@@ -59,6 +59,19 @@ It provides a feature-rich platform for users to connect, share posts, comment, 
 
 ---
 
+
+## 📸 Screenshots
+
+### Home Feed
+![Home Feed](public/screenshots/Home.png)
+
+### User Profile
+![User Profile](public/screenshots/Profile.png)
+
+### Post Creation
+![Create Post](public/screenshots/Post.png)
+
+
 ## ⚡ Installation & Setup
 
 1. **Clone the repository**
@@ -100,6 +113,11 @@ It provides a feature-rich platform for users to connect, share posts, comment, 
    ```bash
    php artisan serve
    ```
+8. **Import the provided Postman collection (postman/Psot Blog.postman_collection.json) into Postman.**
+
+9. **Configure the environment variables in Postman to match your local setup.
+
+10. **You can now use the Postman collection to explore and test the API endpoints.
 
 ---
 
@@ -131,5 +149,5 @@ Developed a **full-stack social media platform** (Laravel + Blade) with:
 ---
 
 ## 👨‍💻 Author
-**Your Name**  
+**Zaid Kreshati**  
 🚀 Full-Stack Developer | Laravel | PHP | MySQL | Redis | JavaScript
