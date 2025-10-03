@@ -215,7 +215,6 @@ class ProfileController extends Controller
 
     public function switchPrivacy(Request $request)
     {
-        Log::info($request->all());
         $status=$request->privacy_on;
         $this->profileService->switchPrivacy($status);
         return $this->successResponse(null,'Privacy switched successfully');
