@@ -115,9 +115,9 @@ It provides a feature-rich platform for users to connect, share posts, comment, 
    ```
 8. **Import the provided Postman collection (postman/Psot Blog.postman_collection.json) into Postman.**
 
-9. **Configure the environment variables in Postman to match your local setup.
+9. **Configure the environment variables in Postman to match your local setup.**
 
-10. **You can now use the Postman collection to explore and test the API endpoints.
+10. **You can now use the Postman collection to explore and test the API endpoints.**
 
 ---
 
